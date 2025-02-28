@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Jogos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #202024;
+            color: #ffffff;
+        }
+        .card {
+            background-color: #2a2a2e;
+            border: 1px solid #3a3a40;
+            border-radius: 10px;
+            width: 100%;
+            margin: auto;
+        }
+        .card img {
+            border-radius: 10px 10px 0 0;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card .card-title {
+          color: #ffffff;
+        }
+
+        .card .card-text {
+          color: #ffffff;
+        }
+
+        .card .card-subtitle {
+          color: #ffffff;
+        }
+
+        .card-body {
+            text-align: center;
+            padding: 10px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .btn-custom {
+            background-color: #ee4d50;
+            color: #fff;
+            border: none;
+            width: 100%;
+            padding: 8px;
+        }
+        .btn-custom:hover {
+            background-color: #d83b3e;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #3a3a40;
+            background-color: #2a2a2e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Meus Jogos</h1>
+
+        <div class="d-flex justify-content-between mb-3">
+            <input type="text" id="search" class="search-bar" placeholder="Pesquisar jogos...">
+            <button class="btn btn-custom ms-2" data-bs-toggle="modal" data-bs-target="#gameModal">Adicionar Jogo</button>
+        </div>
+
+        <div id="game-list" class="row justify-content-center"></div>
+    </div>
+
+    <!-- Modal para Cadastro de Jogos -->
+    <div class="modal fade" id="gameModal" tabindex="-1" aria-labelledby="gameModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gameModalLabel">Adicionar Novo Jogo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="gameForm">
+                        <div class="mb-3">
+                            <label for="gameName" class="form-label">Nome do Jogo</label>
+                            <input type="text" class="form-control bg-secondary text-light" id="gameName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gameCover" class="form-label">URL da Capa</label>
+                            <input type="url" class="form-control bg-secondary text-light" id="gameCover" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gameDownload" class="form-label">Link para Download</label>
+                            <input type="url" class="form-control bg-secondary text-light" id="gameDownload" required>
+                        </div>
+                        <button type="submit" class="btn btn-custom w-100">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let games = [];
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('games.json')
+                .then(response => response.json())
+                .then(data => {
+                    games = data;
+                    displayGames(games);
+                })
+                .catch(error => console.error('Erro ao carregar jogos:', error));
+
+            document.getElementById('search').addEventListener('input', function() {
+                let searchValue = this.value.toLowerCase();
+                let filteredGames = games.filter(game => (game.name.toLowerCase().includes(searchValue) || game.romPlatform.toLowerCase().includes(searchValue)));
+                displayGames(filteredGames);
+            });
+
+            document.getElementById('gameForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                let newGame = {
+                    name: document.getElementById('gameName').value,
+                    cover: document.getElementById('gameCover').value,
+                    download: document.getElementById('gameDownload').value
+                };
+                games.push(newGame);
+                displayGames(games);
+                this.reset();
+                let modal = bootstrap.Modal.getInstance(document.getElementById('gameModal'));
+                modal.hide();
+            });
+        });
+
+        function displayGames(gameList) {
+            let gameContainer = document.getElementById('game-list');
+            gameContainer.innerHTML = "";
+            gameList.forEach(game => {
+                let gameCard = `
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <img src="${game.cover}" class="card-img-top" alt="${game.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${game.name}</h5>
+                                <h6 class="card-subtitle">${game.romPlatform}</h6>
+                                <a href="${game.download}" class="btn btn-custom my-3" target="_blank">Download</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                gameContainer.innerHTML += gameCard;
+            });
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

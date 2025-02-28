@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Spyro: Year of the Dragon",
+        "cover": "https://cdn.mobygames.com/covers/4793347-spyro-year-of-the-dragon-playstation-front-cover.jpg",
+        "description": "The third in the Playstation Spyro the Dragon series sees Spyro having to recover a clutch of Dragon eggs from the evil Sorceress.",
+        "download": "https://archive.org/download/spyro-year-of-the-dragon-usa-v-1.0.-7z/Spyro%20-%20Year%20of%20the%20Dragon%20%28USA%29%20%28v1.0%29.7z",
+        "romPlatform": "PS1"
+    },
+    {
+        "id": 2,
+        "name": "Jackie Chan Stuntmaster",
+        "cover": "https://cdn.mobygames.com/covers/3047257-jackie-chan-stuntmaster-playstation-front-cover.jpg",
+        "description": "Jackie's grandfather has been kidnapped. To rescue his grandfather, Jackie must find and deliver a package to the kidnappers.",
+        "download": "https://example.com/download/cyberpunk2077",
+        "romPlatform": "PS1"
+    },
+    {
+        "id": 3,
+        "name": "Silent Hill",
+        "cover": "https://cdn.mobygames.com/covers/33420-silent-hill-playstation-front-cover.jpg",
+        "description": "Harry Mason, an average man, is driving to the town of Silent Hill with his daughter. Upon approaching the town, a cop speeds by on a motorcycle. When Harry gets closer to town, he sees that same motorcycle sprawled in the middle of the road. Harry also spots a woman standing in the road, but due to the dense fog, he can't stop in time, so he swerves to avoid her, crashing into a railing, knocking him unconscious.",
+        "download": "https://archive.org/download/silent-hill-v-1.1.-7z/Silent%20Hill%20%28v1.1%29.7z",
+        "romPlatform": "PS1"
+    }
+]
