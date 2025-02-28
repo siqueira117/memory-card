@@ -14,7 +14,7 @@
             background-color: #2a2a2e;
             border: 1px solid #3a3a40;
             border-radius: 10px;
-            width: 100%;
+            width: 75%;
             margin: auto;
         }
         .card img {
@@ -53,7 +53,7 @@
         .btn-custom:hover {
             background-color: #d83b3e;
         }
-        .search-bar, #platform-options {
+        input, .platform-options {
             width: 100%;
             padding: 10px;
             border-radius: 5px;
@@ -67,9 +67,9 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Meus Jogos</h1>
 
-        <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex justify-content-evenly mb-3">
             <input type="text" id="search" class="search-bar" placeholder="Pesquisar jogos...">
-            <select class="form-select" aria-label="platforms" id="platform-options">
+            <select class="form-select platform-options" aria-label="platforms" id="platform-options">
                 <option selected value="*">Plataforma</option>
             </select>
             <button class="btn btn-custom ms-2" data-bs-toggle="modal" data-bs-target="#gameModal">Adicionar Jogo</button>
@@ -90,15 +90,21 @@
                     <form id="gameForm">
                         <div class="mb-3">
                             <label for="gameName" class="form-label">Nome do Jogo</label>
-                            <input type="text" class="form-control bg-secondary text-light" id="gameName" required>
+                            <input type="text" id="gameName" required>
                         </div>
                         <div class="mb-3">
                             <label for="gameCover" class="form-label">URL da Capa</label>
-                            <input type="url" class="form-control bg-secondary text-light" id="gameCover" required>
+                            <input type="url" id="gameCover" required>
                         </div>
                         <div class="mb-3">
                             <label for="gameDownload" class="form-label">Link para Download</label>
-                            <input type="url" class="form-control bg-secondary text-light" id="gameDownload" required>
+                            <input type="url" id="gameDownload" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="platform-options" class="form-label">Plataforma da ROM</label>
+                            <select class="form-select platform-options" aria-label="platforms" required>
+                                <option selected value="*">Plataforma</option>
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-custom w-100">Salvar</button>
                     </form>
@@ -188,16 +194,9 @@
         }
 
         function displayPlatforms(platformsList) {
-            let platformContainer = document.getElementById('platform-options');
+            let platformContainer = document.querySelectorAll('.platform-options');
             platformsList.forEach(platform => {
-                let platformElement = document.createElement('option');
-                platformElement.innerText = platform.name;
-
-                let valueAttribute = document.createAttribute('value');
-                valueAttribute.value = platform.name;
-                platformElement.setAttributeNode(valueAttribute);
-
-                platformContainer.appendChild(platformElement);
+                platformContainer.forEach(platformCon => platformCon.innerHTML += `<option value="${platform.name}">${platform.name}</option>`);
             });
         }
     </script>

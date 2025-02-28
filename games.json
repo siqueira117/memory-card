@@ -21,6 +21,14 @@
         "cover": "https://cdn.mobygames.com/covers/33420-silent-hill-playstation-front-cover.jpg",
         "description": "Harry Mason, an average man, is driving to the town of Silent Hill with his daughter. Upon approaching the town, a cop speeds by on a motorcycle. When Harry gets closer to town, he sees that same motorcycle sprawled in the middle of the road. Harry also spots a woman standing in the road, but due to the dense fog, he can't stop in time, so he swerves to avoid her, crashing into a railing, knocking him unconscious.",
         "download": "https://archive.org/download/silent-hill-v-1.1.-7z/Silent%20Hill%20%28v1.1%29.7z",
-        "romPlatform": "PS2"
+        "romPlatform": "PS1"
+    },
+    {
+        "id": 4,
+        "name": "Klonoa: Door to Phantomile",
+        "cover": "https://cdn.mobygames.com/covers/3898643-klonoa-door-to-phantomile-playstation-front-cover.jpg",
+        "description": "The energy from dreams is collected in the Moon Kingdom where it is given substance. This rule was broken when Klonoa, a cat-like creature with wings on his ears, dreams that an airship crashes violently into a hill and a mysterious shadow hangs over the wreckage. When the dream comes true, Klonoa and his friend Huepow go to investigate. You take control of Klonoa as he travels through 12 levels of action. Klonoa will encounter a number of enemies who want to stop him. Fortunately, Klona can grab enemies and use them as weapons to destroy other bad guys, or throw them to the ground and propel himself upward. Besides grabbing enemies, Klonoa can also pump up larger enemies and make them explode. Help Klonoa discover the reason for the dream.",
+        "download": "https://archive.org/download/klonoa-door-to-phantomile.-7z/Klonoa%20-%20Door%20to%20Phantomile.7z",
+        "romPlatform": "PS1"
     }
 ]
