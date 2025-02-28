@@ -21,6 +21,22 @@
         "cover": "https://cdn.mobygames.com/covers/33420-silent-hill-playstation-front-cover.jpg",
         "description": "Harry Mason, an average man, is driving to the town of Silent Hill with his daughter. Upon approaching the town, a cop speeds by on a motorcycle. When Harry gets closer to town, he sees that same motorcycle sprawled in the middle of the road. Harry also spots a woman standing in the road, but due to the dense fog, he can't stop in time, so he swerves to avoid her, crashing into a railing, knocking him unconscious.",
         "download": "https://archive.org/download/silent-hill-v-1.1.-7z/Silent%20Hill%20%28v1.1%29.7z",
+        "romPlatform": "PS2"
+    },
+    {
+        "id": 3,
+        "name": "Silent Hill",
+        "cover": "https://cdn.mobygames.com/covers/33420-silent-hill-playstation-front-cover.jpg",
+        "description": "Harry Mason, an average man, is driving to the town of Silent Hill with his daughter. Upon approaching the town, a cop speeds by on a motorcycle. When Harry gets closer to town, he sees that same motorcycle sprawled in the middle of the road. Harry also spots a woman standing in the road, but due to the dense fog, he can't stop in time, so he swerves to avoid her, crashing into a railing, knocking him unconscious.",
+        "download": "https://archive.org/download/silent-hill-v-1.1.-7z/Silent%20Hill%20%28v1.1%29.7z",
+        "romPlatform": "PS2"
+    },
+    {
+        "id": 3,
+        "name": "Silent Hill",
+        "cover": "https://cdn.mobygames.com/covers/33420-silent-hill-playstation-front-cover.jpg",
+        "description": "Harry Mason, an average man, is driving to the town of Silent Hill with his daughter. Upon approaching the town, a cop speeds by on a motorcycle. When Harry gets closer to town, he sees that same motorcycle sprawled in the middle of the road. Harry also spots a woman standing in the road, but due to the dense fog, he can't stop in time, so he swerves to avoid her, crashing into a railing, knocking him unconscious.",
+        "download": "https://archive.org/download/silent-hill-v-1.1.-7z/Silent%20Hill%20%28v1.1%29.7z",
         "romPlatform": "PS1"
     }
 ]

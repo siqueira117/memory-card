@@ -53,7 +53,7 @@
         .btn-custom:hover {
             background-color: #d83b3e;
         }
-        .search-bar {
+        .search-bar, #platform-options {
             width: 100%;
             padding: 10px;
             border-radius: 5px;
@@ -69,6 +69,9 @@
 
         <div class="d-flex justify-content-between mb-3">
             <input type="text" id="search" class="search-bar" placeholder="Pesquisar jogos...">
+            <select class="form-select" aria-label="platforms" id="platform-options">
+                <option selected value="*">Plataforma</option>
+            </select>
             <button class="btn btn-custom ms-2" data-bs-toggle="modal" data-bs-target="#gameModal">Adicionar Jogo</button>
         </div>
 
@@ -105,9 +108,11 @@
     </div>
 
     <script>
-        let games = [];
+        let games       = [];
+        let platforms   = [];
 
         document.addEventListener("DOMContentLoaded", function() {
+            // Busca os jogos
             fetch('games.json')
                 .then(response => response.json())
                 .then(data => {
@@ -115,13 +120,37 @@
                     displayGames(games);
                 })
                 .catch(error => console.error('Erro ao carregar jogos:', error));
+            // =================
 
+            // Select de plataforma
+            fetch('platforms.json')
+                .then(response => response.json())
+                .then(data => {
+                    platforms = data.platforms;
+                    displayPlatforms(platforms);
+                })
+                .catch(error => console.error('Erro ao carregar plataformas:', error));
+            // ==================
+
+            // Barra de pesquisa
             document.getElementById('search').addEventListener('input', function() {
                 let searchValue = this.value.toLowerCase();
                 let filteredGames = games.filter(game => (game.name.toLowerCase().includes(searchValue) || game.romPlatform.toLowerCase().includes(searchValue)));
                 displayGames(filteredGames);
             });
+            // =================
 
+            document.getElementById('platform-options').addEventListener('input', function (e) {
+                let platformValue = this.value.toLowerCase();
+                if (platformValue === "*") {
+                    displayGames(games);
+                } else {
+                    let filteredGames = games.filter(game => game.romPlatform.toLowerCase() === platformValue);
+                    displayGames(filteredGames);
+                }
+            });
+
+            // Cadastro de jogos
             document.getElementById('gameForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 let newGame = {
@@ -135,6 +164,7 @@
                 let modal = bootstrap.Modal.getInstance(document.getElementById('gameModal'));
                 modal.hide();
             });
+            // ==================
         });
 
         function displayGames(gameList) {
@@ -154,6 +184,20 @@
                     </div>
                 `;
                 gameContainer.innerHTML += gameCard;
+            });
+        }
+
+        function displayPlatforms(platformsList) {
+            let platformContainer = document.getElementById('platform-options');
+            platformsList.forEach(platform => {
+                let platformElement = document.createElement('option');
+                platformElement.innerText = platform.name;
+
+                let valueAttribute = document.createAttribute('value');
+                valueAttribute.value = platform.name;
+                platformElement.setAttributeNode(valueAttribute);
+
+                platformContainer.appendChild(platformElement);
             });
         }
     </script>
