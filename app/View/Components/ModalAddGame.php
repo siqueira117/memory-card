@@ -7,12 +7,12 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\Component;
 
-class CardGame extends Component
+class ModalAddGame extends Component
 {
     /**
      * Create a new component instance.
      */
-    public function __construct(public Collection $games)
+    public function __construct(public Collection $platforms)
     {
         //
     }
@@ -22,6 +22,6 @@ class CardGame extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.card-game');
+        return view('components.modal-add-game');
     }
 }

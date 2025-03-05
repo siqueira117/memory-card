@@ -36,4 +36,9 @@ class Game extends Model
     {
         return $this->belongsToMany(Genre::class, 'tbl_game_genres', 'game_id', 'genre_id');
     }
+
+    public function roms()
+    {
+        return $this->hasMany(GameRom::class, 'game_id', 'game_id');
+    }
 }

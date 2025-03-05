@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('game_id')->unique();
             $table->string('name', 150);
             $table->string('slug', 150)->unique();
+            $table->text('summary')->nullable();
             $table->string('coverUrl', 250);
             
             $table->timestamps();
