@@ -24,7 +24,9 @@
             <x-alert typeAlert="error" :message="Session::get('errorMsg')" />
         @endif
 
-        <h1 class="text-center mb-4">MemoryCard</h1>
+        <h1 class="text-center mb-4">
+            <img src="{{ asset('img/logo.png') }}" alt="">
+        </h1>
 
         <div class="d-flex mb-3">
             <input type="text" id="search" class="search-bar w-80" placeholder="Pesquisar jogos...">

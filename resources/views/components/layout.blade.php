@@ -10,7 +10,10 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">MemoryCard</h1>
+        
+        <h1 class="text-center mb-4">
+            <img src="{{ asset('img/logo.png') }}" alt="">
+        </h1>
 
         <div class="d-flex justify-content-evenly mb-3">
             <input type="text" id="search" class="search-bar" placeholder="Pesquisar jogos...">
