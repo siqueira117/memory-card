@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class PlatformType extends Model
 {
@@ -26,9 +27,4 @@ class PlatformType extends Model
      * @var array<int, string>
      */
     protected $fillable = ['platform_type_id', 'name'];
-
-    public function platforms() 
-    {
-        return $this->hasMany(Platform::class);
-    }
 }
