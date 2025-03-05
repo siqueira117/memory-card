@@ -29,11 +29,16 @@ class Game extends Controller
                 return Redirect::back()->withErrors($validator);
             }
     
-            $game = GameIgdb::where('name', $request->gameName)
+            $game = GameIgdb::search($request->gameName)
                 ->orderBy('first_release_date', 'asc')
                 ->with(['cover'])
                 ->first();
             
+            if (!$game) {
+                $request->session()->flash('errorMsg',"{$game->name}: Não foi encontrado!"); 
+                return Redirect::back();
+            }
+
             DB::beginTransaction();
     
             $gameModel = GameModel::create([

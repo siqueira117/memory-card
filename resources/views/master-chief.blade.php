@@ -20,6 +20,10 @@
             <x-alert typeAlert="success" :message="Session::get('successMsg')" />
         @endif
 
+        @if(Session::has('errorMsg'))
+            <x-alert typeAlert="error" :message="Session::get('errorMsg')" />
+        @endif
+
         <h1 class="text-center mb-4">MemoryCard</h1>
 
         <div class="d-flex mb-3">
