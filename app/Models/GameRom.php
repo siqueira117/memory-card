@@ -26,4 +26,9 @@ class GameRom extends Model
      * @var array<int, string>
      */
     protected $fillable = ['game_id', 'platform_id', 'romUrl'];
+
+    public function platforms()
+    {
+        $this->belongsTo(Platform::class);
+    }
 }

@@ -20,7 +20,7 @@ body {
     padding: 8px;
 }
 
-.btn-custom:hover {
+.btn-custom:hover, .btn.show {
     background-color: var(--btn-color-hover);
 }
 

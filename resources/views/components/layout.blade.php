@@ -6,6 +6,7 @@
     <title>Memory Card</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/card.css') }}">
 </head>
 <body>
     <div class="container mt-5">
@@ -13,12 +14,9 @@
 
         <div class="d-flex justify-content-evenly mb-3">
             <input type="text" id="search" class="search-bar" placeholder="Pesquisar jogos...">
-            {{-- <select class="form-select platform-options" aria-label="platforms" id="platform-options">
-                <option selected value="*">Plataforma</option>
-            </select> --}}
         </div>
 
-        <div id="game-list" class="row justify-content-center">
+        <div id="game-list" class="row justify-content-left">
             {{ $slot }}
         </div>
     </div>
