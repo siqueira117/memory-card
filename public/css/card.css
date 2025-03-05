@@ -10,6 +10,16 @@
   margin: auto;
 }
 
+@media (max-width: 480px) {
+  .card {
+    background-color: var(--card-color);
+    border: 1px solid #3a3a40;
+    border-radius: 10px;
+    width: 40%;
+    margin: auto;
+  }
+}
+
 .card img {
   border-radius: 10px 10px 0 0;
   height: 100%;
