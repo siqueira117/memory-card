@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <small>created: {{ date("d/m/Y", strtotime($game["created_at"])) }}</small>
+                    <small>added at: {{ date("F j, Y", strtotime($game["created_at"])) }}</small>
                 </div>                
             </div>
         </div>
