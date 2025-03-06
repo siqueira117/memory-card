@@ -32,10 +32,18 @@ class Game extends Controller
             }
     
             // Consultando API do IGDB
-            $game = GameIgdb::search($request->gameName)
+            $game = null;
+            if ($request->gameId) {
+                $game = GameIgdb::where('id', '=', intval($request->gameId))
                 ->orderBy('first_release_date', 'asc')
                 ->with(['cover', 'artworks', 'videos', 'franchises'])
                 ->first();
+            } else {
+                $game = GameIgdb::search($request->gameName)
+                ->orderBy('first_release_date', 'asc')
+                ->with(['cover', 'artworks', 'videos', 'franchises'])
+                ->first();
+            }
         
             if (!$game) {
                 $request->session()->flash('errorMsg',"{$game->name}: Não foi encontrado!"); 

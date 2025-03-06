@@ -9,6 +9,10 @@
                 <form id="gameForm" action="{{url('/addGame')}}" method="post" >
                     @csrf
                     <div class="mb-3">
+                        <label for="gameId" class="form-label">IGDB ID:</label>
+                        <input type="text" id="gameId" name="gameId">
+                    </div>
+                    <div class="mb-3">
                         <label for="gameName" class="form-label">Nome do Jogo</label>
                         <input type="text" id="gameName" name="gameName" required>
                     </div>
