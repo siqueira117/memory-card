@@ -18,9 +18,9 @@
             @endif
         @endif
 
-        <h1 class="text-center mb-4">
+        {{-- <h1 class="text-center mb-4">
             <img id="logo" src="{{ asset('img/logo_purple.png') }}" alt="memorycard">
-        </h1>
+        </h1> --}}
 
         @livewire('search-games', ['games' => $games, 'platforms' => $platforms])
     </div>

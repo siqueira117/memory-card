@@ -18,7 +18,6 @@ body {
     color: #fff;
     border: none;
     width: 100%;
-    padding: 8px;
 }
 
 .btn-custom:hover, .btn.show {
@@ -37,4 +36,12 @@ input, .platform-options {
 
 #logo {
     width: 250px;
+}
+
+nav {
+    color: var(--backgroud-color-black);
+}
+
+.nav-item {
+    margin: 5px;
 }
