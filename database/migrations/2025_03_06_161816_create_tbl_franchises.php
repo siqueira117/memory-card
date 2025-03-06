@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_games', function (Blueprint $table) {
+        Schema::create('tbl_franchises', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('game_id')->unique();
+            $table->unsignedBigInteger('franchise_id')->unique();
             $table->string('name', 150);
             $table->string('slug', 150)->unique();
-            $table->text('summary');
-            $table->text('storyline')->nullable();
-            $table->string('coverUrl', 250);
-            
+
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_games');
+        Schema::dropIfExists('tbl_franchises');
     }
 };

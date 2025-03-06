@@ -25,7 +25,7 @@ class Game extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['game_id', 'name', 'slug', 'coverUrl'];
+    protected $fillable = ['game_id', 'name', 'summary', 'storyline', 'slug', 'coverUrl'];
 
     public function platforms()
     {
@@ -40,5 +40,10 @@ class Game extends Model
     public function roms()
     {
         return $this->hasMany(GameRom::class, 'game_id', 'game_id');
+    }
+
+    public function franchises()
+    {
+        return $this->belongsToMany(Franchise::class, 'tbl_game_franchises', 'game_id', 'franchise_id');
     }
 }
