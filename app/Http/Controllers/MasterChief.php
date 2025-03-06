@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Platform;
-use Illuminate\Http\Request;
 
 class MasterChief extends Controller
 {
@@ -21,6 +20,6 @@ class MasterChief extends Controller
             }
         }
 
-        return view('master-chief', ['platformsToSelect' => $platformsToSelect, 'games' => $games, 'platforms' => $platforms]);
+        return view('index', ['platformsToSelect' => $platformsToSelect, 'games' => $games, 'platforms' => $platforms]);
     }
 }

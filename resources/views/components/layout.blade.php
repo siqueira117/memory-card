@@ -10,20 +10,43 @@
 </head>
 <body>
     <div class="container mt-5">
-        
+        @if( Route::is('masterchief') )
+            @if($errors->any())
+                @foreach ($errors->all() as $error)
+                    <x-alert typeAlert="error" :message="$error" />
+                @endforeach
+            @endif
+
+            @if(Session::has('successMsg'))
+                <x-alert typeAlert="success" :message="Session::get('successMsg')" />
+            @endif
+
+            @if(Session::has('errorMsg'))
+                <x-alert typeAlert="error" :message="Session::get('errorMsg')" />
+            @endif
+        @endif
+
         <h1 class="text-center mb-4">
             <img src="{{ asset('img/logo.png') }}" alt="">
         </h1>
 
-        <div class="d-flex justify-content-evenly mb-3">
-            <input type="text" id="search" class="search-bar" placeholder="Pesquisar jogos...">
+        <div class="d-flex mb-3">
+            <input type="text" id="search" class="search-bar w-80" placeholder="Pesquisar jogos...">
+
+            @if( Route::is('memorycard') )
+                <button class="btn btn-custom ms-2 w-20" data-bs-toggle="modal" data-bs-target="#gameModal">Adicionar Jogo</button>
+            @endif
         </div>
 
         <div id="game-list" class="row justify-content-left">
-            {{ $slot }}
+            <x-card-game :games="$games" :platforms="$platforms" />
         </div>
     </div>
 
+    @if( Route::is('memorycard'))
+        <x-modal-add-game :platforms="$platformsToSelect" />
+    @endif
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
