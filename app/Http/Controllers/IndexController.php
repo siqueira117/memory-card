@@ -9,7 +9,7 @@ class IndexController extends Controller
 {
     public function index()
     {
-        $games      = Game::with(['roms', 'genres'])->get();
+        $games      = Game::with(['roms', 'genres'])->limit(20)->get();
         $platforms  = [];
         foreach ($games as $game) {
             $roms = $game->roms;
