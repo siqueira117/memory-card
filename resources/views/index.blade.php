@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Memory Card</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
     <link rel="stylesheet" href="{{ asset('css/card.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
     @livewireStyles
 </head>
 <body>
@@ -28,7 +28,7 @@
         @endif
 
         <h1 class="text-center mb-4">
-            <img src="{{ asset('img/logo.png') }}" alt="">
+            <img id="logo" src="{{ asset('img/logo_purple.png') }}" alt="memorycard">
         </h1>
 
         @livewire('search-games', ['games' => $games, 'platforms' => $platforms])

@@ -1,9 +1,9 @@
 <div>
     <div class="d-flex mb-3">
-        <input wire:model.live="search" type="text" id="search" class="search-bar w-80" placeholder="Pesquisar jogos...">
+        <input wire:model.live="search" type="text" id="search" class="search-bar w-80" placeholder="Search games...">
     
         @if( Route::is('masterchief') )
-            <button class="btn btn-custom ms-2 w-20" data-bs-toggle="modal" data-bs-target="#gameModal">Adicionar Jogo</button>
+            <button class="btn btn-custom ms-2 w-20" data-bs-toggle="modal" data-bs-target="#gameModal">Add game</button>
         @endif
     </div>
     

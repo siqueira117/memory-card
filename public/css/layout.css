@@ -1,8 +1,8 @@
 :root {
     --backgroud-color-black: #202024;
     
-    --btn-color: #ee4d50;
-    --btn-color-hover: #d83b3e;
+    --btn-color: #7a2bf7;
+    --btn-color-hover: #6f29de;
 
     --input-color: #2a2a2e;
 }
@@ -10,6 +10,7 @@
 body {
     background-color: var(--backgroud-color-black);
     color: #ffffff;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .btn-custom {
@@ -22,6 +23,7 @@ body {
 
 .btn-custom:hover, .btn.show {
     background-color: var(--btn-color-hover);
+    color: #fff;
 }
 
 input, .platform-options {
@@ -31,4 +33,8 @@ input, .platform-options {
     border: 1px solid #3a3a40;
     background-color: var(--input-color);
     color: #fff;
+}
+
+#logo {
+    width: 250px;
 }
