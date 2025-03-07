@@ -32,24 +32,11 @@ class GameController extends Controller
             }
     
             // Consultando API do IGDB
-            $game = null;
-            if ($request->gameId) {
-                $game = GameIgdb::where('id', '=', intval($request->gameId))
-                ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises'])
-                ->first();
-            } else {
-                $game = GameIgdb::search($request->gameName)
-                ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises'])
-                ->first();
-            }
-        
+            $game = $this->getGameData($request);
             if (!$game) {
                 $request->session()->flash('errorMsg',"{$game->name}: Não foi encontrado!"); 
                 return Redirect::back();
             }
-
             // ==========================
 
             // Verificando se temos esse jogo cadastrado
@@ -70,23 +57,20 @@ class GameController extends Controller
                 "game_id"   => $game->id,
                 "name"      => $game->name,
                 "slug"      => $game->slug,
-                "summary"   => $game->summary ?? "TESTE",
-                "storyline" => $game->storyline ?? "TESTE",
+                "summary"   => $game->summary ?? null,
+                "storyline" => $game->storyline ?? null,
                 "coverUrl"  => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
             ]);
     
-            if (!$gameModel) {
-                DB::rollBack();
-                throw new \Exception("ERRO ao adicionar jogo!");
-            }
+            if (!$gameModel) throw new \Exception("Não foi possível adicionar o jogo!");
 
             if ($game->genres) $this->insertGameGenres($game->genres, $game->id);
 
             if ($game->platforms) $this->insertGamePlatforms($game->platforms, $game->id);
 
-            if ($game->franchises) {
-                $this->insertGameFranchises($game->franchises, $gameModel);
-            }
+            if ($game->franchises) $this->insertGameFranchises($game->franchises, $gameModel);
+
+            if ($game->themes) $this->insertGameThemes($game->themes, $gameModel);
 
             $this->insertRoms($request, $game->id);
     
@@ -140,6 +124,26 @@ class GameController extends Controller
         }
 
         $gameModel->franchises()->attach($franchisesIds);
+    }
+
+    private function getGameData(Request $request)
+    {
+        if ($request->gameId) {
+            return GameIgdb::where('id', '=', intval($request->gameId))
+                ->orderBy('first_release_date', 'asc')
+                ->with(['cover', 'artworks', 'videos', 'franchises'])
+                ->first();
+        } else {
+            return GameIgdb::search($request->gameName)
+                ->orderBy('first_release_date', 'asc')
+                ->with(['cover', 'artworks', 'videos', 'franchises'])
+                ->first();
+        }
+    }
+
+    private function insertGameThemes(array $themes, $gameModel)
+    {
+        $gameModel->themes()->attach($themes);
     }
 
     public function details($slug)

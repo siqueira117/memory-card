@@ -1,4 +1,4 @@
-<footer class="bg-dark text-light py-4 mt-5">
+<footer class="bg-dark text-light py-4 fixed-bottom">
     <div class="container">
         <div class="row">
             <!-- Logo e Sobre -->
@@ -20,7 +20,7 @@
 
         <!-- Copyright -->
         <div class="text-center mt-3">
-            <p class="mb-0">&copy; {{ date('Y') }} memorycard - powered by <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="https://www.igdb.com/">IGDB</a></p>
+            <p class="mb-0">&copy; {{ date('Y') }} memorycard - powered by <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="https://www.igdb.com/"><strong>IGDB</strong></a></p>
         </div>
     </div>
 </footer>
