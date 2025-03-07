@@ -14,7 +14,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PlatformTypeSeeder::class,
             PlatformSeeder::class,
-            GenreSeeder::class
+            GenreSeeder::class,
+            ThemeSeeder::class
         ]);
     }
 }
