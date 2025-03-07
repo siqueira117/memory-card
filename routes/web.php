@@ -9,3 +9,4 @@ Route::get('/', [IndexController::class, 'index']);
 Route::get('/masterchief', [MasterChief::class, 'index'])->name('masterchief');
 Route::post('/addGame', [Game::class, 'store'])->name('addGame');
 Route::get('/gameDetails/{slug}', [Game::class, 'details'])->name('game.details');
+Route::get('/sobre', [IndexController::class, 'aboutUs'])->name('about.us');
