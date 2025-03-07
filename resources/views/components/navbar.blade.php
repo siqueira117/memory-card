@@ -17,10 +17,10 @@
                     <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/sobre') ? 'active' : '' }}" href="{{ url('/sobre') }}">Sobre</a>
+                    <a class="nav-link {{ request()->is('sobre') ? 'active' : '' }}" href="{{ url('/sobre') }}">Sobre</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('contato') ? 'active' : '' }}" href="{{ url('/contato') }}">Contato</a>
+                    <a class="nav-link {{ request()->is('sugestoes') ? 'active' : '' }}" href="{{ url('/sugestoes') }}">Sugestões</a>
                 </li>
             </ul>
 

@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="gameForm" action="{{url('/addGame')}}" method="post" >
+                <form id="gameForm" action="{{ route('game.store')}}" method="post" >
                     @csrf
                     <div class="mb-3">
                         <label for="gameId" class="form-label">IGDB ID:</label>

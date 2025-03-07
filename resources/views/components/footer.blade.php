@@ -4,7 +4,7 @@
             <!-- Logo e Sobre -->
             <div class="col-md-12 text-center">
                 {{-- <h5>memorycard</h5> --}}
-                <p><i class="fa-solid fa-heart heartIcon"></i> Feito de gamers, para gamers <i class="fa-solid fa-heart heartIcon"></i></p>
+                <p><i class="fa-solid fa-heart heartIcon"></i> Feito por gamers, para gamers <i class="fa-solid fa-heart heartIcon"></i></p>
             </div>
 
             <!-- Links Úteis -->
@@ -20,7 +20,7 @@
 
         <!-- Copyright -->
         <div class="text-center mt-3">
-            <p class="mb-0">&copy; {{ date('Y') }} memorycard</p>
+            <p class="mb-0">&copy; {{ date('Y') }} memorycard - powered by <a class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="https://www.igdb.com/">IGDB</a></p>
         </div>
     </div>
 </footer>
