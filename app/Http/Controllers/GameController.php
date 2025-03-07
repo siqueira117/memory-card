@@ -22,7 +22,7 @@ class GameController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'gameName'      => 'required',
+                'gameId'        => 'required',
                 'gameDownload'  => 'required',
                 'gamePlatform'  => 'required'
             ]);

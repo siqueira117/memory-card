@@ -12,10 +12,10 @@
                         <label for="gameId" class="form-label">IGDB ID:</label>
                         <input type="text" id="gameId" name="gameId">
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="gameName" class="form-label">Nome do Jogo</label>
                         <input type="text" id="gameName" name="gameName" required>
-                    </div>
+                    </div> --}}
                     {{-- <div class="mb-3">
                         <label for="gameCover" class="form-label">URL da Capa</label>
                         <input type="url" id="gameCover" required>
