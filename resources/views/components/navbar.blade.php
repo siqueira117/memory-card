@@ -14,17 +14,17 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Início</a>
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('sobre') ? 'active' : '' }}" href="{{ url('/sobre') }}">Sobre</a>
+                    <a class="nav-link {{ request()->is('/sobre') ? 'active' : '' }}" href="{{ url('/sobre') }}">Sobre</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('contato') ? 'active' : '' }}" href="{{ url('/contato') }}">Contato</a>
                 </li>
             </ul>
 
-            <!-- Botões de Login/Cadastro -->
+            {{-- <!-- Botões de Login/Cadastro -->
             <ul class="navbar-nav ms-3">
                 @auth
                     <li class="nav-item dropdown">
@@ -43,13 +43,13 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="btn btn-custom" href="">Entrar</a>
+                        <a class="btn btn-custom" href="">Sign In</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-light" href="">Cadastrar</a>
+                        <a class="btn btn-outline-light" href="">Sign Up</a>
                     </li>
                 @endauth
-            </ul>
+            </ul> --}}
         </div>
     </div>
 </nav>

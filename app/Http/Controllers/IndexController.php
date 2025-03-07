@@ -21,4 +21,9 @@ class IndexController extends Controller
 
         return view('index', ['games' => $games, 'platforms' => $platforms]);
     }
+
+    public function aboutUs()
+    {
+        return view('sobre-nos');
+    }
 }

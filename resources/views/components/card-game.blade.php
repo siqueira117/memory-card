@@ -23,7 +23,19 @@
                             </ul>
                         </div>
                     </div>
+
+                    @if( Route::is('masterchief') )
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-warning">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger">
+                                <i class="fa-solid fa-eraser"></i>
+                            </button>
+                        </div>
+                    @endif
                 </div>
+
                 <div class="card-footer">
                     <small>added at: {{ date("F j, Y", strtotime($game["created_at"])) }}</small>
                 </div>                
