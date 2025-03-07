@@ -25,11 +25,7 @@ class PlatformTypeSeeder extends Seeder
     public function run(): void
     {
         foreach (self::__PLATFORM_TYPES__ as $platformsType) {
-            try {
-                PlatformType::create($platformsType);
-            } catch (\Exception $e) {
-                die($e->getMessage());
-            }
+            PlatformType::create($platformsType);
         }
     }
 }
