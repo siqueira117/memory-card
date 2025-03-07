@@ -4,7 +4,7 @@
             <!-- Logo e Sobre -->
             <div class="col-md-12 text-center">
                 {{-- <h5>memorycard</h5> --}}
-                <p><i class="fa-solid fa-heart"></i> Feito de gamers, para gamers<i class="fa-solid fa-heart"></i></p>
+                <p><i class="fa-solid fa-heart heartIcon"></i> Feito de gamers, para gamers <i class="fa-solid fa-heart heartIcon"></i></p>
             </div>
 
             <!-- Links Úteis -->
