@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\Platform;
 
-class MasterChief extends Controller
+class MasterChiefController extends Controller
 {
     public function index()
     {

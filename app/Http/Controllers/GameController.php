@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Session;
 use MarcReichel\IGDBLaravel\Enums\Image\Size;
 use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
 
-class Game extends Controller
+class GameController extends Controller
 {
     public function store(Request $request)
     {
