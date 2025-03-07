@@ -8,6 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/card.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
+    @yield('style')
+    
     @livewireStyles
 </head>
 <body>
