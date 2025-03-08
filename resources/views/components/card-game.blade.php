@@ -1,16 +1,16 @@
 <div class="row g-3">
     @foreach ($games as $game)
-        <div class="col-6 col-sm-6 col-md-5 col-lg-3">
-            <div class="card h-100 w-75 ">
+        <div class="col-6 col-sm-6 col-md-4 col-lg-2">
+            <div class="card h-100 w-100">
                 <img src="{{ $game['coverUrl'] }}" class="card-img-top" alt="{{ $game['name'] }}">
                 <div class="card-body d-flex flex-column">
                     {{-- <a href="{{ route('game.details', $game['slug']) }}" class="stretched-link"></a> --}}
                     <h5 class="card-title">{{ $game['name'] }}</h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary">
+                    {{-- <h6 class="card-subtitle mb-2 text-body-secondary" >
                         @foreach ($game->genres as $genre)
                             <span class="badge text-bg-light">{{ $genre->name }}</span>
                         @endforeach
-                    </h6>
+                    </h6> --}}
                     <div class="mt-auto">
                         <div class="dropdown">
                             <a class="btn btn-custom my-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

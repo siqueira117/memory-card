@@ -25,13 +25,25 @@ body {
     color: #fff;
 }
 
-input, .platform-options {
+input, .platform-options, #search {
     width: 100%;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #3a3a40;
     background-color: var(--input-color);
     color: #fff;
+}
+
+#search {
+    width: 80%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #3a3a40;
+    background-color: var(--input-color);
+    color: #fff;
+    &::placeholder {
+        color: #ffffff85;
+    }
 }
 
 #logo {

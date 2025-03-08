@@ -7,6 +7,7 @@ use App\Models\Game as GameModel;
 use App\Models\GameGenres;
 use App\Models\GamePlatforms;
 use App\Models\GameRom;
+use App\Models\Platform;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -18,6 +19,21 @@ use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
 
 class GameController extends Controller
 {
+    public function index()
+    {
+        $games      = GameModel::with(['roms'])->limit(20)->get();
+        $platforms  = [];
+        foreach ($games as $game) {
+            $roms = $game->roms;
+            foreach ($roms as $rom) {
+                $platform = Platform::where('platform_id', $rom->platform_id)->first();
+                $platforms[$game->game_id][] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
+            }
+        }
+
+        return view('index', ['games' => $games, 'platforms' => $platforms]);
+    }
+    
     public function store(Request $request)
     {
         try {
