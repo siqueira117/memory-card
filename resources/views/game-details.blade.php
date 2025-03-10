@@ -17,7 +17,7 @@
             @endif
 
             @if(isset($game['total_rating']))
-                <p><strong>Avaliação:</strong><span class="badge text-bg-success"> {{ round($game['total_rating'], 1) }}/100</span> </p>
+                <p><strong>Avaliação: </strong><span class="badge text-bg-success"> {{ round($game['total_rating'], 1) }}/100</span> </p>
             @endif
 
             <p class="mt-3"><strong>Descrição:</strong> {{ $game['summary'] }}</p>
@@ -44,7 +44,7 @@
                 </p>
             @endif
             
-            @if(isset($game['franchises']))
+            @if(isset($game['franchises']) && count($game['franchises']) !== 0 )
                 <p><strong>Franquias:</strong></p>
                 <p>
                     @foreach($game['franchises'] as $franchise)

@@ -75,6 +75,8 @@ class GameController extends Controller
                 "slug"      => $game->slug,
                 "summary"   => $game->summary ?? null,
                 "storyline" => $game->storyline ?? null,
+                "first_release_date" => $game->first_release_date ?? null,
+                "total_rating" => $game->total_rating ?? null,
                 "coverUrl"  => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
             ]);
     

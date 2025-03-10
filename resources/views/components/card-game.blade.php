@@ -37,7 +37,7 @@
                         </div>
                     </div> --}}
 
-                    @if( Route::is('masterchief') )
+                    {{-- @if( Route::is('masterchief') )
                         <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-warning">
                                 <i class="fa-solid fa-pen-to-square"></i>
@@ -46,7 +46,7 @@
                                 <i class="fa-solid fa-eraser"></i>
                             </button>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
                 {{-- <div class="card-footer">
                     <small>added at: {{ date("F j, Y", strtotime($game["created_at"])) }}</small>

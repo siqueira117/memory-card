@@ -25,7 +25,7 @@ class Game extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['game_id', 'name', 'summary', 'storyline', 'slug', 'coverUrl'];
+    protected $fillable = ['game_id', 'name', 'summary', 'storyline', 'slug', 'coverUrl', 'first_release_date', 'total_rating'];
 
     public function platforms()
     {
