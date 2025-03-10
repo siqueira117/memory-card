@@ -21,7 +21,7 @@ class SearchGames extends Component
         $games = [];
 
         if (strlen($this->search) >= 5) {
-            $games = Game::where('name', 'like', '%'.$this->search.'%')->limit(5)->get();
+            $games = Game::where('name', 'ilike', '%'.$this->search.'%')->limit(5)->get();
             $this->games = $games;
         } else {
             $this->games = $this->originalGames;

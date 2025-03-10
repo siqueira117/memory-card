@@ -5,7 +5,7 @@
                 <img src="{{ $game['coverUrl'] }}" class="card-img-top" alt="{{ $game['name'] }}">
                 <div class="card-body d-flex flex-column">
                     {{-- <a href="{{ route('game.details', $game['slug']) }}" class="stretched-link"></a> --}}
-                    <h5 class="card-title">{{ $game['name'] }}</h5>
+                    <h6 class="card-title">{{ $game['name'] }}</h6>
                     {{-- <h6 class="card-subtitle mb-2 text-body-secondary" >
                         @foreach ($game->genres as $genre)
                             <span class="badge text-bg-light">{{ $genre->name }}</span>
@@ -35,10 +35,9 @@
                         </div>
                     @endif
                 </div>
-
-                <div class="card-footer">
+                {{-- <div class="card-footer">
                     <small>added at: {{ date("F j, Y", strtotime($game["created_at"])) }}</small>
-                </div>                
+                </div>                 --}}
             </div>
         </div>
     @endforeach
