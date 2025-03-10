@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-<div class="container mt-5 w-80 rounded-1 bg-dark p-5">
+<div class="container mt-5 w-80 rounded-1 bg-dark-custom p-5">
     <div class="row">
         <!-- Imagem Ilustrativa -->
         {{-- <div class="col-md-6 d-flex align-items-center">

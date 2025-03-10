@@ -21,7 +21,7 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games      = GameModel::with(['roms'])->limit(20)->get();
+        $games      = GameModel::with(['roms', 'genres'])->limit(30)->orderBy('created_at', 'desc')->get();
         $platforms  = [];
         foreach ($games as $game) {
             $roms = $game->roms;
@@ -162,21 +162,40 @@ class GameController extends Controller
         $gameModel->themes()->attach($themes);
     }
 
-    public function details($slug)
+    public function details(string $slug)
     {
         try {
-            $game = GameModel::where('slug', $slug)->first();
+            $game = GameModel::with(['roms', 'genres', 'platforms', 'franchises'])->where('slug', $slug)->first();
             if (!$game) {
                 Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
                 return Redirect::back();
             }
-    
-            // $gameIgdb = GameIgdb::where('slug', $slug)->with(['cover', 'artworks', 'videos'])->get();
-            // dd($gameIgdb);
 
-            return view('game-details', ['game' => $game]);
+            $roms = $game->roms;
+            $platforms = [];
+            foreach ($roms as $rom) {
+                $platform = Platform::where('platform_id', $rom->platform_id)->first();
+                $platforms[] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
+            }
+           
+            return view('game-details', ['game' => $game, 'platforms' => $platforms]);
         } catch (\Exception $e) {
             dd($e->getMessage());
+        }
+    }
+
+    public function update()
+    {
+        $games = GameModel::all();
+        foreach ($games as $game) {
+            echo("Atualizando {$game['name']}...\n");
+            $gameIgdb = GameIgdb::where('slug', $game['slug'])->get();
+            GameModel::where('game_id', $game['game_id'])->update(
+                [
+                    'storyline' => $gameIgdb[0]->storyline
+                ]
+            );
+            echo("{$game['name']}: Atualizado com sucesso!\n\n");
         }
     }
 }

@@ -1,10 +1,11 @@
 :root {
     --backgroud-color-black: #202024;
     
-    --btn-color: #7a2bf7;
-    --btn-color-hover: #6f29de;
+    --btn-color: #a05ffb;
+    --btn-color-hover: #bf8dfd;
 
     --input-color: #2a2a2e;
+    --bg-dark: #282828;
 }
 
 body {
@@ -70,4 +71,8 @@ nav {
 
 .heartIcon {
     color: #bc0e0e;
+}
+
+.bg-dark-custom {
+    background-color: var(--bg-dark);
 }

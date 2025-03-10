@@ -5,29 +5,87 @@
     <div class="row">
         <!-- Imagem do Jogo -->
         <div class="col-md-4">
-            <img src="{{ $game->coverUrl }}" class="img-fluid rounded shadow" alt="{{ $game['name'] }}">
+            <img src="{{ $game["coverUrl"] }}" class="img-fluid rounded shadow" alt="{{ $game["name"] }}">
         </div>
 
-        <!-- Informações do Jogo -->
-        <div class="col-md-8">
-            <h1 class="mb-3">{{ $game['name'] }}</h1>
-            <p class="text-muted">{{ $game['description'] }}</p>
+        <!-- Detalhes do Jogo -->
+        <div class="col-md-8 rounded-1 bg-dark-custom p-5">
+            <h2 class="fw-bold">{{ $game["name"] }}</h2>
 
-            <!-- Dropdown de Download -->
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            @if(isset($game['first_release_date']))
+                <p><strong>Lançamento:</strong> {{ date("d/m/Y", strtotime($game['first_release_date'])) }}</p>
+            @endif
+
+            @if(isset($game['total_rating']))
+                <p><strong>Avaliação:</strong><span class="badge text-bg-success"> {{ round($game['total_rating'], 1) }}/100</span> </p>
+            @endif
+
+            <p class="mt-3"><strong>Descrição:</strong> {{ $game['summary'] }}</p>
+
+            @if(isset($game['storyline']))
+                <p class="mt-3"><strong>Storyline:</strong> {{ $game['storyline'] }}</p>
+            @endif
+            
+            @if(isset($game['genres']))
+                <p><strong>Gêneros:</strong></p>
+                <p>
+                    @foreach($game['genres'] as $genre)
+                        <span class="badge text-bg-success">{{ $genre['name'] }}</span>
+                    @endforeach
+                </p>
+            @endif
+
+            @if(isset($game['platforms']))
+                <p><strong>Plataformas:</strong></p>
+                <p>
+                    @foreach($game['platforms'] as $platform)
+                        <span class="badge text-bg-primary">{{ $platform['name'] }}</span>
+                    @endforeach
+                </p>
+            @endif
+            
+            @if(isset($game['franchises']))
+                <p><strong>Franquias:</strong></p>
+                <p>
+                    @foreach($game['franchises'] as $franchise)
+                        <span class="badge text-bg-warning">{{ $franchise['name'] }}</span>
+                    @endforeach
+                </p>
+            @endif
+
+            <div class="dropdown w-50">
+                <a class="btn btn-custom my-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Download
-                </button>
+                </a>
                 <ul class="dropdown-menu">
-                    {{-- @foreach ($platforms as $platform)
-                        <li><a class="dropdown-item" href="{{ $platform->romUrl }}">{{ $platform->platform_name }}</a></li>
-                    @endforeach --}}
+                    @foreach ($platforms as $platform)
+                        <li><a class="dropdown-item" href="{{ $platform['romUrl'] }}">{{ $platform['platform_name'] }}</a></li>
+                    @endforeach
                 </ul>
             </div>
-
-            <!-- Botão Voltar -->
-            <a href="{{ url('/') }}" class="btn btn-secondary mt-3">Voltar</a>
         </div>
     </div>
+
+    {{-- <!-- Galeria de Screenshots -->
+    @if(isset($game['screenshots']))
+    <h3 class="mt-5">Imagens</h3>
+    <div class="row">
+        @foreach($game['screenshots'] as $screenshot)
+            <div class="col-md-4 mb-3">
+                <img src="{{ str_replace('thumb', 'screenshot_big', $screenshot['url']) }}" class="img-fluid rounded shadow" alt="Screenshot">
+            </div>
+        @endforeach
+    </div>
+    @endif
+
+    <!-- Links Externos -->
+    @if(isset($game['websites']))
+    <h3 class="mt-5">Links Oficiais</h3>
+    <ul>
+        @foreach($game['websites'] as $site)
+            <li><a href="{{ $site['url'] }}" target="_blank">{{ $site['url'] }}</a></li>
+        @endforeach
+    </ul>
+    @endif --}}
 </div>
 @endsection
