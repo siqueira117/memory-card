@@ -22,7 +22,7 @@
             <img id="logo" src="{{ asset('img/logo_purple.png') }}" alt="memorycard">
         </h1> --}}
 
-        @livewire('search-games', ['games' => $games, 'platforms' => $platforms])
+        @livewire('search-games', ['platforms' => $platforms, 'allGames' => $allGames])
     </div>
 
     @if( Route::is('masterchief'))

@@ -12,7 +12,7 @@ class CardGame extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public Collection $games, public array $platforms)
+    public function __construct(public $games, public array $platforms)
     {
         //
     }

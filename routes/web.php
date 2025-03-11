@@ -11,7 +11,7 @@ Route::get('/', [GameController::class, 'index']);
 Route::get('/sobre', [IndexController::class, 'aboutUs'])->name('about.us');
 
 if (getenv("APP_ENV") === 'local') {
-    Route::get('/masterchief', [MasterChiefController::class, 'index'])->name('masterchief');
+    Route::get('/masterchief', [GameController::class, 'index'])->name('masterchief');
 }
 
 Route::post('/addGame', [GameController::class, 'store'])->name('game.store');

@@ -6,9 +6,16 @@
         @endif
     </div>
 
+    <small>Total de jogos: {{ $allGames }}</small>
+
     @if(sizeof($games) > 0)
         <div id="game-list" class="row justify-content-left mx-auto h-100 w-100">
             <x-card-game :games="$games" :platforms="$platforms" />
+        </div>
+
+        <!-- Paginação -->
+        <div class="d-flex justify-content-center mt-4 w-100">
+            {{ $games->links('livewire.pagination') }}
         </div>
     @else
         <div class="justify-content-center w-100 h-100" style="margin-top: 30vh; margin-bottom: 30vh">

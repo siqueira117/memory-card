@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route as FacadesRoute;
 use Illuminate\Support\Facades\Session;
 use MarcReichel\IGDBLaravel\Enums\Image\Size;
 use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
@@ -21,7 +22,7 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games      = GameModel::with(['roms', 'genres'])->limit(30)->orderBy('created_at', 'desc')->get();
+        $games      = GameModel::with(['roms', 'genres'])->limit(40)->orderBy('created_at', 'desc')->paginate(20);
         $platforms  = [];
         foreach ($games as $game) {
             $roms = $game->roms;
@@ -31,7 +32,14 @@ class GameController extends Controller
             }
         }
 
-        return view('index', ['games' => $games, 'platforms' => $platforms]);
+        $return = [ 'games' => $games, 'platforms' => $platforms, 'allGames' => GameModel::count() ];
+
+        if (FacadesRoute::is('masterchief')) {
+            $platformsToSelect = Platform::orderBy('name', 'asc')->get();
+            $return['platformsToSelect'] = $platformsToSelect;
+        }
+
+        return view('index', $return);
     }
     
     public function store(Request $request)
