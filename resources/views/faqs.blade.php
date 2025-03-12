@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="container mt-5 w-80 rounded-1 bg-dark p-5">
+<div class="container mt-5 w-80 rounded-1 bg-dark-custom p-5">
     <h2 class="fw-bold text-center mb-4 title">Perguntas Frequentes (FAQs)</h2>
     <p class="text-center mb-5 subtitle">Aqui estão as respostas para as perguntas mais comuns sobre o MemoryCard.</p>
 

@@ -1,10 +1,11 @@
 :root {
     --backgroud-color-black: #202024;
     
-    --btn-color: #7a2bf7;
-    --btn-color-hover: #6f29de;
+    --btn-color: #a05ffb;
+    --btn-color-hover: #bf8dfd;
 
     --input-color: #2a2a2e;
+    --bg-dark: #282828;
 }
 
 body {
@@ -25,13 +26,25 @@ body {
     color: #fff;
 }
 
-input, .platform-options {
+input, .platform-options, #search {
     width: 100%;
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #3a3a40;
     background-color: var(--input-color);
     color: #fff;
+}
+
+#search {
+    width: 80%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #3a3a40;
+    background-color: var(--input-color);
+    color: #fff;
+    &::placeholder {
+        color: #ffffff85;
+    }
 }
 
 #logo {
@@ -58,4 +71,26 @@ nav {
 
 .heartIcon {
     color: #bc0e0e;
+}
+
+.bg-dark-custom {
+    background-color: var(--bg-dark);
+}
+
+.pagination .page-item .page-link {
+    color: #6f29de; /* Cor personalizada */
+    border: 1px solid #6f29de;
+    transition: 0.3s;
+    background-color: var(--bg-dark);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #6f29de;
+    color: #fff;
+    border-color: #6f29de;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #6f29de;
+    color: #fff
 }

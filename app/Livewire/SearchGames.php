@@ -4,29 +4,35 @@ namespace App\Livewire;
 
 use App\Models\Game;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class SearchGames extends Component
 {
+    use WithPagination;
+
     public $search = "";
-    public $games = [];
+    protected $paginationTheme = 'custom';
     public $platforms;
-    public $originalGames = [];
+    public $allGames;
+
+    public function updatingSearch()
+    {
+        $this->resetPage(); // Reseta a paginação ao buscar
+    }
 
     public function render()
     {
-        if (count($this->games) >= 1 && count($this->originalGames) < 1) {
-            $this->originalGames = $this->games;
-        }
-
-        $games = [];
-
         if (strlen($this->search) >= 5) {
-            $games = Game::where('name', 'like', '%'.$this->search.'%')->limit(5)->get();
-            $this->games = $games;
+            $games = Game::with(['roms', 'genres'])
+                ->orderBy('created_at', 'desc')
+                ->where('name', 'ilike', '%'.$this->search.'%')
+                ->paginate(30);
         } else {
-            $this->games = $this->originalGames;
+            $games = Game::with(['roms', 'genres'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(30);
         }
 
-        return view('livewire.search-games');
+        return view('livewire.search-games', compact('games'));
     }
 }

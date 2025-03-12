@@ -1,5 +1,5 @@
 :root {
-  --card-color: #2a2a2e;
+  --card-color: #282828;
 }
 
 .card {
@@ -29,7 +29,7 @@
 
 .card img {
   border-radius: 10px 10px 0 0;
-  height: 100%;
+  height: 300px;
   object-fit: cover;
 }
 
@@ -57,4 +57,12 @@
 
 small, p {
   color: #fff;
+}
+
+.badge-new {
+  background-color: #74f94d;
+  width: fit-content;
+  font-size: x-small;
+  margin: auto;
+  color: #3a3a40;
 }

@@ -7,22 +7,46 @@ use App\Models\Game as GameModel;
 use App\Models\GameGenres;
 use App\Models\GamePlatforms;
 use App\Models\GameRom;
+use App\Models\Platform;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route as FacadesRoute;
 use Illuminate\Support\Facades\Session;
 use MarcReichel\IGDBLaravel\Enums\Image\Size;
 use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
 
 class GameController extends Controller
 {
+    public function index()
+    {
+        $games      = GameModel::with(['roms', 'genres'])->limit(40)->orderBy('created_at', 'desc')->paginate(20);
+        $platforms  = [];
+        foreach ($games as $game) {
+            $roms = $game->roms;
+            foreach ($roms as $rom) {
+                $platform = Platform::where('platform_id', $rom->platform_id)->first();
+                $platforms[$game->game_id][] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
+            }
+        }
+
+        $return = [ 'games' => $games, 'platforms' => $platforms, 'allGames' => GameModel::count() ];
+
+        if (FacadesRoute::is('masterchief')) {
+            $platformsToSelect = Platform::orderBy('name', 'asc')->get();
+            $return['platformsToSelect'] = $platformsToSelect;
+        }
+
+        return view('index', $return);
+    }
+    
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'gameName'      => 'required',
+                'gameId'        => 'required',
                 'gameDownload'  => 'required',
                 'gamePlatform'  => 'required'
             ]);
@@ -59,6 +83,8 @@ class GameController extends Controller
                 "slug"      => $game->slug,
                 "summary"   => $game->summary ?? null,
                 "storyline" => $game->storyline ?? null,
+                "first_release_date" => $game->first_release_date ?? null,
+                "total_rating" => $game->total_rating ?? null,
                 "coverUrl"  => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
             ]);
     
@@ -146,21 +172,40 @@ class GameController extends Controller
         $gameModel->themes()->attach($themes);
     }
 
-    public function details($slug)
+    public function details(string $slug)
     {
         try {
-            $game = GameModel::where('slug', $slug)->first();
+            $game = GameModel::with(['roms', 'genres', 'platforms', 'franchises'])->where('slug', $slug)->first();
             if (!$game) {
                 Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
                 return Redirect::back();
             }
-    
-            // $gameIgdb = GameIgdb::where('slug', $slug)->with(['cover', 'artworks', 'videos'])->get();
-            // dd($gameIgdb);
 
-            return view('game-details', ['game' => $game]);
+            $roms = $game->roms;
+            $platforms = [];
+            foreach ($roms as $rom) {
+                $platform = Platform::where('platform_id', $rom->platform_id)->first();
+                $platforms[] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
+            }
+           
+            return view('game-details', ['game' => $game, 'platforms' => $platforms]);
         } catch (\Exception $e) {
             dd($e->getMessage());
+        }
+    }
+
+    public function update()
+    {
+        $games = GameModel::all();
+        foreach ($games as $game) {
+            echo("Atualizando {$game['name']}...\n");
+            $gameIgdb = GameIgdb::where('slug', $game['slug'])->get();
+            GameModel::where('game_id', $game['game_id'])->update(
+                [
+                    'storyline' => $gameIgdb[0]->storyline
+                ]
+            );
+            echo("{$game['name']}: Atualizado com sucesso!\n\n");
         }
     }
 }
