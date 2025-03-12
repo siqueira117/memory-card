@@ -81,15 +81,16 @@ nav {
     color: #6f29de; /* Cor personalizada */
     border: 1px solid #6f29de;
     transition: 0.3s;
+    background-color: var(--bg-dark);
 }
 
 .pagination .page-item.active .page-link {
     background-color: #6f29de;
-    color: white;
+    color: #fff;
     border-color: #6f29de;
 }
 
 .pagination .page-item .page-link:hover {
     background-color: #6f29de;
-    color: white;
+    color: #fff
 }

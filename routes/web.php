@@ -15,7 +15,7 @@ if (getenv("APP_ENV") === 'local') {
 }
 
 Route::post('/addGame', [GameController::class, 'store'])->name('game.store');
-Route::get('/gameDetails/{slug}', [GameController::class, 'details'])->name('game.details');
+Route::get('/game/{slug}', [GameController::class, 'details'])->name('game.details');
 //Route::get('/updateGames', [GameController::class, 'update'])->name('game.updates');
 
 Route::get('/sugestoes', [SuggestionController::class, 'index'])->name('suggestion.index');
