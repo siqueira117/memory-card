@@ -8,14 +8,17 @@
             </div>
 
             <!-- Links Úteis -->
-            {{-- <div class="col-md-6">
-                <h5>Links Úteis</h5>
-                <ul class="list-unstyled">
-                    <li><a href="{{ url('/') }}" class="text-light text-decoration-none">Início</a></li>
-                    <li><a href="{{ url('/sobre') }}" class="text-light text-decoration-none">Sobre</a></li>
-                    <li><a href="{{ url('/contato') }}" class="text-light text-decoration-none">Sugestões</a></li>
-                </ul>
-            </div> --}}
+            <div class="col-md-12 text-center">
+                <p class="text-center">
+                    <a href="{{ route('index') }}" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Inicio</a>
+                    |
+                    <a href="{{ route('suggestion.index') }}" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Sugestões</a>
+                    |
+                    <a href="{{ route('faqs.index') }}" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">FAQs</a>
+                    |
+                    <a href="{{ route('about.us') }}" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Sobre</a>
+                </p>
+            </div>
         </div>
 
         <!-- Copyright -->

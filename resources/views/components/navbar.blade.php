@@ -16,18 +16,18 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Inicio</a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link {{ request()->is('/sobre') ? 'active' : '' }}" href="{{ url('/sobre') }}">Sobre</a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('sugestoes') ? 'active' : '' }}" href="{{ url('/sugestoes') }}">Sugestões</a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link {{ request()->is('faqs') ? 'active' : '' }}" href="{{ url('/faqs') }}">FAQs</a>
-                </li>
+                </li> --}}
             </ul>
 
-            {{-- <!-- Botões de Login/Cadastro -->
+            <!-- Botões de Login/Cadastro -->
             <ul class="navbar-nav ms-3">
                 @auth
                     <li class="nav-item dropdown">
@@ -35,9 +35,9 @@
                             {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url('/perfil') }}">Meu Perfil</a></li>
+                            {{-- <li><a class="dropdown-item" href="{{ url('/perfil') }}">Meu Perfil</a></li> --}}
                             <li>
-                                <form method="POST" action="">
+                                <form method="POST" action="{{ route('user.logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item">Sair</button>
                                 </form>
@@ -46,13 +46,13 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="btn btn-custom" href="">Sign In</a>
+                        <a class="btn btn-custom" href="{{ route('user.loginView') }}">Entrar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-light" href="">Sign Up</a>
+                        <a class="btn btn-custom" href="{{ route('user.registerView') }}">Cadastrar</a>
                     </li>
                 @endauth
-            </ul> --}}
+            </ul>
         </div>
     </div>
 </nav>

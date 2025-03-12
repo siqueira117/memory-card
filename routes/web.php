@@ -5,9 +5,12 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\MasterChiefController;
 use App\Http\Controllers\SuggestionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Livewire\Auth\Register;
+use Livewire\Livewire;
 
-Route::get('/', [GameController::class, 'index']);
+Route::get('/', [GameController::class, 'index'])->name('index');
 Route::get('/sobre', [IndexController::class, 'aboutUs'])->name('about.us');
 
 if (getenv("APP_ENV") === 'local') {
@@ -22,3 +25,12 @@ Route::get('/sugestoes', [SuggestionController::class, 'index'])->name('suggesti
 Route::post('/addSuggestion', [SuggestionController::class, 'store'])->name('suggestion.store');
 
 Route::get('/faqs', [FaqsController::class, 'index'])->name('faqs.index');
+
+// Usuário
+Route::get('/register', [UserController::class, 'registerView'])->name('user.registerView');
+Route::post('/register', [UserController::class, 'register'])->name('user.register');
+
+Route::get('/login', [UserController::class, 'loginView'])->name('user.loginView');
+Route::post('/login', [UserController::class, 'login'])->name('user.login');
+
+Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
