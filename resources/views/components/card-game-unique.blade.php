@@ -12,15 +12,15 @@
         @endphp
 
         @if ($newGame)
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-new">
-                Novo
-            <span class="visually-hidden">unread messages</span>
+            <div>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-new">
+                    Novo
+                <span class="visually-hidden">unread messages</span>
+            </div>
         @endif
-        {{-- <h6 class="card-subtitle mb-2 text-body-secondary" >
-            @foreach ($game->genres as $genre)
-                <span class="badge text-bg-light">{{ $genre->name }}</span>
-            @endforeach
-        </h6> --}}
+        <h6 class="card-subtitle mb-2 text-body-secondary" >
+            <small class="badge badge-bg-green text-wrap">{{ $game->genres[0]->name }}</small>
+        </h6>
         {{-- <div class="mt-auto">
             <div class="dropdown">
                 <a class="btn btn-custom my-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

@@ -132,3 +132,7 @@ nav {
 a {
     text-decoration: none;
 }
+
+.badge-bg-green {
+    background-color: #475044;
+}
