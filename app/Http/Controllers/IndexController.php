@@ -9,6 +9,7 @@ class IndexController extends Controller
 {
     public function index()
     {
+        $platformsToSelect = Platform::orderBy('name', 'asc')->get();
         $games      = Game::with(['roms', 'genres'])->limit(20)->orderBy('name', 'asc')->get();
         $platforms  = [];
         foreach ($games as $game) {
@@ -19,7 +20,7 @@ class IndexController extends Controller
             }
         }
 
-        return view('index', ['games' => $games, 'platforms' => $platforms]);
+        return view('index', ['games' => $games, 'platforms' => $platforms, 'platformsToSelect' => $platformsToSelect]);
     }
 
     public function aboutUs()
