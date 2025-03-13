@@ -22,10 +22,13 @@
             <img id="logo" src="{{ asset('img/logo_purple.png') }}" alt="memorycard">
         </h1> --}}
 
-        @livewire('search-games', ['platforms' => $platforms, 'allGames' => $allGames])
+        @livewire('search-games', ['allGames' => $allGames])
     </div>
 
     @if( Route::is('masterchief'))
         <x-modal-add-game :platforms="$platformsToSelect" />
     @endif
+
+    <x-modal-login />
+
 @endsection

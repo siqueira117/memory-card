@@ -65,6 +65,20 @@
             </div>
         </div>
     </div>
+    <div class="row justify-content-end">
+        @if (sizeof($relatedGames) > 0) 
+            <div class="col-md-8 rounded-1 bg-dark-custom p-5 mt-3">
+                <h4 class="subtitle mb-3">Jogos relacionados</h4>
+                <div class="row">
+                    @foreach ($relatedGames as $game)
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                            <x-card-game-unique :game="$game" />
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
 
     {{-- <!-- Galeria de Screenshots -->
     @if(isset($game['screenshots']))

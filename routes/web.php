@@ -30,7 +30,7 @@ Route::get('/faqs', [FaqsController::class, 'index'])->name('faqs.index');
 Route::get('/register', [UserController::class, 'registerView'])->name('user.registerView');
 Route::post('/register', [UserController::class, 'register'])->name('user.register');
 
-Route::get('/login', [UserController::class, 'loginView'])->name('user.loginView');
+// Route::get('/login', [UserController::class, 'loginView'])->name('user.loginView');
 Route::post('/login', [UserController::class, 'login'])->name('user.login');
 
 Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');

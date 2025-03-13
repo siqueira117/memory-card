@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
     <div class="container">
         <!-- Logo -->
-        <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-            <img id="logo" src="{{ asset('img/logo_purple.png') }}" alt="memorycard">
+        <a class="navbar-brand fw-bold" href="{{ route('index') }}">
+            <img id="logo" src="{{ asset('img/logo_green.png') }}" alt="memorycard">
         </a>
 
         <!-- Botão para mobile -->
@@ -46,10 +46,12 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="btn btn-custom" href="{{ route('user.loginView') }}">Entrar</a>
+                        <button class="btn btn-custom-secondary" data-bs-toggle="modal" data-bs-target="#userLogin">Entrar</button>
+                        {{-- <a class="btn btn-custom" href="{{ route('user.loginView') }}">Entrar</a> --}}
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-custom" href="{{ route('user.registerView') }}">Cadastrar</a>
+                        {{-- <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#userRegister">Regitrar-se</button> --}}
+                        <a class="btn btn-custom" href="{{ route('user.registerView') }}">Regitrar-se</a>
                     </li>
                 @endauth
             </ul>

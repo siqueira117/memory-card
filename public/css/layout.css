@@ -1,8 +1,8 @@
 :root {
     --backgroud-color-black: #202024;
     
-    --btn-color: #a05ffb;
-    --btn-color-hover: #bf8dfd;
+    --btn-color: #56da3e;
+    --btn-color-hover: #8be574;
 
     --input-color: #2a2a2e;
     --bg-dark: #282828;
@@ -24,6 +24,16 @@ body {
 .btn-custom:hover, .btn.show {
     background-color: var(--btn-color-hover);
     color: #fff;
+}
+
+.btn-custom-secondary {
+    border: 1px solid;
+    border-color: var(--btn-color);
+    color: var(--btn-color);
+    &:hover {
+        background-color: var(--btn-color-hover);
+        color: #fff;
+    }
 }
 
 input, .platform-options, #search {
@@ -48,7 +58,8 @@ input, .platform-options, #search {
 }
 
 #logo {
-    width: 250px;
+    width: 200px;
+    height: auto;
 }
 
 nav {
@@ -57,6 +68,7 @@ nav {
 
 .nav-item {
     margin: 5px;
+    font-size: 11pt;
 }
 
 .title {
@@ -83,20 +95,20 @@ nav {
 }
 
 .pagination .page-item .page-link {
-    color: #6f29de; /* Cor personalizada */
-    border: 1px solid #6f29de;
+    color: #2cd515; /* Cor personalizada */
+    border: 1px solid #2cd515;
     transition: 0.3s;
     background-color: var(--bg-dark);
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #6f29de;
+    background-color: #2cd515;
     color: #fff;
-    border-color: #6f29de;
+    border-color: #2cd515;
 }
 
 .pagination .page-item .page-link:hover {
-    background-color: #6f29de;
+    background-color: #2cd515;
     color: #fff
 }
 

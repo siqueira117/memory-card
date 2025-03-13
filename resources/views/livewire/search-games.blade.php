@@ -10,7 +10,7 @@
 
     @if(sizeof($games) > 0)
         <div id="game-list" class="row justify-content-left mx-auto h-100 w-100">
-            <x-card-game :games="$games" :platforms="$platforms" />
+            <x-card-game :games="$games"/>
         </div>
 
         <!-- Paginação -->

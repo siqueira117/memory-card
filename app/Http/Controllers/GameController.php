@@ -17,22 +17,23 @@ use Illuminate\Support\Facades\Route as FacadesRoute;
 use Illuminate\Support\Facades\Session;
 use MarcReichel\IGDBLaravel\Enums\Image\Size;
 use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
+use MarcReichel\IGDBLaravel\Models\GameMode;
 
 class GameController extends Controller
 {
     public function index()
     {
         $games      = GameModel::with(['roms', 'genres'])->limit(40)->orderBy('created_at', 'desc')->paginate(20);
-        $platforms  = [];
-        foreach ($games as $game) {
-            $roms = $game->roms;
-            foreach ($roms as $rom) {
-                $platform = Platform::where('platform_id', $rom->platform_id)->first();
-                $platforms[$game->game_id][] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
-            }
-        }
+        // $platforms  = [];
+        // foreach ($games as $game) {
+        //     $roms = $game->roms;
+        //     foreach ($roms as $rom) {
+        //         $platform = Platform::where('platform_id', $rom->platform_id)->first();
+        //         $platforms[$game->game_id][] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
+        //     }
+        // }
 
-        $return = [ 'games' => $games, 'platforms' => $platforms, 'allGames' => GameModel::count() ];
+        $return = [ 'games' => $games, 'allGames' => GameModel::count() ];
 
         if (FacadesRoute::is('masterchief')) {
             $platformsToSelect = Platform::orderBy('name', 'asc')->get();
@@ -187,8 +188,13 @@ class GameController extends Controller
                 $platform = Platform::where('platform_id', $rom->platform_id)->first();
                 $platforms[] = [ 'platform_name' => $platform->name, 'romUrl' => $rom->romUrl ];
             }
-           
-            return view('game-details', ['game' => $game, 'platforms' => $platforms]);
+
+            $relatedGames = GameModel::whereHas('franchises', function ($query) use ($game) {
+                $query->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
+            })->where('game_id', '!=', $game->id)->get();            
+            
+
+            return view('game-details', ['game' => $game, 'platforms' => $platforms, 'relatedGames' => $relatedGames]);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
