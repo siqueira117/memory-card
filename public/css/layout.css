@@ -12,6 +12,7 @@ body {
     background-color: var(--backgroud-color-black);
     color: #ffffff;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    min-height: max-content;
 }
 
 .btn-custom {
@@ -36,7 +37,7 @@ body {
     }
 }
 
-input, .platform-options, #search {
+input, select, #search {
     width: 100%;
     padding: 10px;
     border-radius: 5px;
@@ -126,7 +127,7 @@ nav {
 
 #page-container {
     position: relative;
-    min-height: 100vh;
+    min-height: max-content;
 }
 
 a {

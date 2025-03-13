@@ -7,11 +7,48 @@
             @endif
         @endauth
     </div>
+    <!-- Filtros -->
+    <div class="d-flex mb-3">
+        <select class="me-2" wire:model="genre">
+            <option value="" selected>Todos os gêneros</option>
+            @foreach(\App\Models\Genre::all() as $genre)
+                <option value="{{ $genre->genre_id }}">{{ $genre->name }}</option>
+            @endforeach
+        </select>
+    
+        <select class="me-2" wire:model="platform">
+            <option value="" selected>Todas as plataformas</option>
+            @foreach(\App\Models\Platform::orderBy('name', 'asc')->get() as $platform)
+                <option value="{{ $platform->platform_id }}">{{ $platform->name }}</option>
+            @endforeach
+        </select>
+    
+        <select class="me-2" wire:model="orderBy">
+            <option value="name" selected>Ordenar por Nome</option>
+            <option value="first_release_date">Ordenar por Data de Lançamento</option>
+        </select>
+    
+        <button class="btn btn-custom ms-2" wire:click="$toggle('orderDirection')">
+            {{ $orderDirection  ? '⬆️ Ascendente' : '⬇️ Descendente' }}
+        </button>
+
+        <button class="btn btn-custom ms-2" x-on:click="$wire.$refresh()">
+            Filtrar
+        </button>
+    </div>
 
     <small>Total de jogos: {{ $allGames }}</small>
 
+    <!-- Loading Spinner -->
+    <div wire:loading wire:target="search, genre, platform, orderBy, orderDirection" class="text-center my-4 container">
+        <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p>Carregando resultados...</p>
+    </div>
+
     @if(sizeof($games) > 0)
-        <div id="game-list" class="row justify-content-left mx-auto h-100 w-100">
+        <div id="game-list" class="row justify-content-left mx-auto h-100 w-100" wire:loading.remove>
             <x-card-game :games="$games"/>
         </div>
 
@@ -20,7 +57,7 @@
             {{ $games->links('livewire.pagination') }}
         </div>
     @else
-        <div class="justify-content-center w-100 h-100" style="margin-top: 30vh; margin-bottom: 30vh">
+        <div class="justify-content-center w-100 h-100" style="margin-top: 30vh; margin-bottom: 30vh" wire:loading.remove>
             <h4 class="text-center h-100">Não foi possível encontrar seu jogo! :(</h4>
         </div>
     @endif

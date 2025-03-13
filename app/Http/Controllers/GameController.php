@@ -184,7 +184,7 @@ class GameController extends Controller
 
             $relatedGames = GameModel::whereHas('franchises', function ($query) use ($game) {
                 $query->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
-            })->where('game_id', '!=', $game->id)->get();            
+            })->where('game_id', '!=', $game->game_id)->get();            
 
             return view('game-details', ['game' => $game, 'platforms' => $platforms, 'relatedGames' => $relatedGames]);
         } catch (\Exception $e) {
