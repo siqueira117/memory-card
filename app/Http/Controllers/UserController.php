@@ -57,7 +57,7 @@ class UserController extends Controller
         }
         
         if (Auth::attempt(['name' => $request->userName, 'password' => $request->userPassword])) {
-            return redirect()->route('index');
+            return Redirect::back();
         } else {
             session()->flash('errorMsg', 'E-mail ou senha incorretos.');
             return Redirect::back();

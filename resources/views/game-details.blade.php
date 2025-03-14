@@ -79,6 +79,9 @@
             </div>
         @endif
     </div>
+    <div class="row justify-content-end">
+        @livewire('game-reviews', ['gameId' => $game->game_id])
+    </div>
 
     {{-- <!-- Galeria de Screenshots -->
     @if(isset($game['screenshots']))

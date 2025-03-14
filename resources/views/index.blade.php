@@ -32,6 +32,6 @@
         @endif
     @endauth
 
-    <x-modal-login />
+    {{-- <x-modal-login /> --}}
 
 @endsection
