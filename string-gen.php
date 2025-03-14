@@ -1,11 +1,25 @@
 <?php
 
-$file = file_get_contents(__DIR__."/themes.json");
-$themes = json_decode($file, true);
+require_once(__DIR__."/vendor/autoload.php");
 
-$str = "";
-foreach ($themes as $theme) {
-    $str .= '[ "theme_id" => '.$theme["theme_id"].', "name" => "'.$theme["name"].'", "slug" => "'.$theme["slug"].'"],'."\n";
+use App\Models\Game;
+use MarcReichel\IGDBLaravel\Enums\Image\Size;
+use MarcReichel\IGDBLaravel\Models\Game as ModelsGame;
+
+$games = Game::all();
+$dados = [];
+foreach ($games as $game) {
+    echo("Atualizando {$game['name']}...\n");
+    $gameIgdb = ModelsGame::where('slug', $game->slug)
+        ->with(['screenshots'])
+        ->first();
+    
+    if ($gameIgdb->screenshots) {
+        foreach ($gameIgdb->screenshots as $screenshot) {
+            $url = $screenshot->getUrl(Size::COVER_BIG, true);
+            $dados[] = [ "screenshotUrl" => $url ];
+        }
+    }
+    $game->screenshots()->createMany($dados);
+    echo("{$game['name']}: Atualizado com sucesso!\n");
 }
-
-echo $str;

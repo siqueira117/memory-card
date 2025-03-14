@@ -42,6 +42,11 @@ class Game extends Model
         return $this->hasMany(GameRom::class, 'game_id', 'game_id');
     }
 
+    public function screenshots()
+    {
+        return $this->hasMany(GameScreeshot::class, 'game_id', 'game_id');
+    }
+
     public function franchises()
     {
         return $this->belongsToMany(Franchise::class, 'tbl_game_franchises', 'game_id', 'franchise_id');

@@ -11,14 +11,14 @@
     <div class="d-flex mb-3">
         <select class="me-2" wire:model="genre">
             <option value="" selected>Todos os gêneros</option>
-            @foreach(\App\Models\Genre::all() as $genre)
+            @foreach($genres as $genre)
                 <option value="{{ $genre->genre_id }}">{{ $genre->name }}</option>
             @endforeach
         </select>
     
         <select class="me-2" wire:model="platform">
             <option value="" selected>Todas as plataformas</option>
-            @foreach(\App\Models\Platform::orderBy('name', 'asc')->get() as $platform)
+            @foreach($platforms as $platform)
                 <option value="{{ $platform->platform_id }}">{{ $platform->name }}</option>
             @endforeach
         </select>

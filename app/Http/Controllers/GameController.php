@@ -92,6 +92,8 @@ class GameController extends Controller
 
             if ($game->themes) $this->insertGameThemes($game->themes, $gameModel);
 
+            if ($game->screenshots) $this->insertScreenshots($game->screenshots, $gameModel);
+
             $this->insertRoms($request, $game->id);
     
             DB::commit();
@@ -117,6 +119,15 @@ class GameController extends Controller
         foreach ($platforms as $platformsId) {
             GamePlatforms::create([ 'game_id' => $gameId, 'platform_id' => $platformsId ]);
         }
+    }
+
+    private function insertScreenshots($screenshots, $gameModel)
+    {
+        $screenshotsUrls = array_map(function($screenshot) {
+            return [ "screenshotUrl" => $screenshot->getUrl(Size::COVER_BIG, true) ];
+        }, $screenshots);
+
+        $gameModel->screenshots()->createMany($screenshotsUrls);
     }
 
     private function insertRoms($request, int $gameId)
@@ -151,12 +162,12 @@ class GameController extends Controller
         if ($request->gameId) {
             return GameIgdb::where('id', '=', intval($request->gameId))
                 ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises'])
+                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots'])
                 ->first();
         } else {
             return GameIgdb::search($request->gameName)
                 ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises'])
+                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots'])
                 ->first();
         }
     }
@@ -169,7 +180,7 @@ class GameController extends Controller
     public function details(string $slug)
     {
         try {
-            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises'])->where('slug', $slug)->first();
+            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots'])->where('slug', $slug)->first();
             if (!$game) {
                 Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
                 return Redirect::back();
@@ -197,13 +208,19 @@ class GameController extends Controller
         $games = GameModel::all();
         foreach ($games as $game) {
             echo("Atualizando {$game['name']}...\n");
-            $gameIgdb = GameIgdb::where('slug', $game['slug'])->get();
-            GameModel::where('game_id', $game['game_id'])->update(
-                [
-                    'storyline' => $gameIgdb[0]->storyline
-                ]
-            );
-            echo("{$game['name']}: Atualizado com sucesso!\n\n");
+            $gameIgdb = GameIgdb::where('slug', $game->slug)
+                ->with(['screenshots'])
+                ->first();
+            
+            $dados = [];
+            if ($gameIgdb->screenshots) {
+                foreach ($gameIgdb->screenshots as $screenshot) {
+                    $url = $screenshot->getUrl(Size::HD, true);
+                    $dados[] = [ "screenshotUrl" => $url ];
+                }
+            }
+
+            $game->screenshots()->createMany($dados);
         }
     }
 }

@@ -6,6 +6,44 @@
         <!-- Imagem do Jogo -->
         <div class="col-md-4">
             <img src="{{ $game["coverUrl"] }}" class="img-fluid rounded shadow" alt="{{ $game["name"] }}">
+
+            <!-- Carousel de Screenshots -->
+            @if(isset($game['screenshots']) && count($game['screenshots']) > 0)
+                <div id="gameScreenshots" class="carousel slide mt-3" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @foreach($game['screenshots'] as $index => $screenshot)
+                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                <!-- Imagem Clicável -->
+                                <img src="{{ $screenshot["screenshotUrl"] }}" 
+                                    class="d-block w-100 rounded shadow screenshot-thumbnail"
+                                    alt="Screenshot {{ $index + 1 }}"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#screenshotModal"
+                                    data-src="{{ $screenshot["screenshotUrl"] }}">
+                            </div>
+                        @endforeach
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#gameScreenshots" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#gameScreenshots" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Próximo</span>
+                    </button>
+                </div>
+            
+                <!-- Modal para Tela Cheia -->
+                <div class="modal fade" id="screenshotModal" tabindex="-1" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content" style="background-color: transparent">
+                            <div class="modal-body text-center">
+                                <img id="modalImage" src="" class="img-fluid rounded shadow">
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            @endif
         </div>
 
         <!-- Detalhes do Jogo -->
@@ -65,6 +103,7 @@
             </div>
         </div>
     </div>
+
     <div class="row justify-content-end">
         @if (sizeof($relatedGames) > 0) 
             <div class="col-md-8 rounded-1 bg-dark-custom p-5 mt-3">
@@ -79,30 +118,23 @@
             </div>
         @endif
     </div>
+    
     <div class="row justify-content-end">
         @livewire('game-reviews', ['gameId' => $game->game_id])
     </div>
-
-    {{-- <!-- Galeria de Screenshots -->
-    @if(isset($game['screenshots']))
-    <h3 class="mt-5">Imagens</h3>
-    <div class="row">
-        @foreach($game['screenshots'] as $screenshot)
-            <div class="col-md-4 mb-3">
-                <img src="{{ str_replace('thumb', 'screenshot_big', $screenshot['url']) }}" class="img-fluid rounded shadow" alt="Screenshot">
-            </div>
-        @endforeach
-    </div>
-    @endif
-
-    <!-- Links Externos -->
-    @if(isset($game['websites']))
-    <h3 class="mt-5">Links Oficiais</h3>
-    <ul>
-        @foreach($game['websites'] as $site)
-            <li><a href="{{ $site['url'] }}" target="_blank">{{ $site['url'] }}</a></li>
-        @endforeach
-    </ul>
-    @endif --}}
 </div>
 @endsection
+
+@if(isset($game['screenshots']) && count($game['screenshots']) > 0)
+    @section('script')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.screenshot-thumbnail').forEach(item => {
+                    item.addEventListener('click', function () {
+                        document.getElementById('modalImage').src = this.getAttribute('data-src');
+                    });
+                });
+            });
+        </script>
+    @endsection
+@endif

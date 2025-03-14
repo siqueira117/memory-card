@@ -3,7 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Game;
+use App\Models\Genre;
+use App\Models\Platform;
 use Livewire\Component;
+use Illuminate\Support\Facades\Cache;
 use Livewire\WithPagination;
 
 class SearchGames extends Component
@@ -11,7 +14,8 @@ class SearchGames extends Component
     use WithPagination;
 
     protected $paginationTheme = 'custom';
-    public $platforms;
+    public $platforms = [];
+    public $genres = [];
     public $allGames;
 
     public $search = ''; // Pesquisa
@@ -38,6 +42,12 @@ class SearchGames extends Component
     public function updatingOrderBy()
     {
         $this->resetPage();
+    }
+
+    public function mount()
+    {
+        $this->platforms = Cache::remember('platforms', 3600, fn() => Platform::orderBy('name')->get()->toArray());
+        $this->genres = Cache::remember('genres', 3600, fn() => Genre::all()->toArray());
     }
 
     public function render()
