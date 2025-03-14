@@ -17,8 +17,8 @@ class SearchGames extends Component
     public $search = ''; // Pesquisa
     public $genre = ''; // Filtro de gênero
     public $platform = ''; // Filtro de plataforma
-    public $orderBy = 'name'; // Campo de ordenação
-    public $orderDirection = true; // Direção da ordenação
+    public $orderBy = 'created_at'; // Campo de ordenação
+    public $orderDirection = false; // Direção da ordenação
 
     public function updatingSearch()
     {

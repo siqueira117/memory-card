@@ -24,7 +24,8 @@
         </select>
     
         <select class="me-2" wire:model="orderBy">
-            <option value="name" selected>Ordenar por Nome</option>
+            <option value="created_at" selected>Ordernar por Novidade</option>
+            <option value="name">Ordenar por Nome</option>
             <option value="first_release_date">Ordenar por Data de Lançamento</option>
         </select>
     

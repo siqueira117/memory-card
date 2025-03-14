@@ -44,6 +44,9 @@ input, select, #search {
     border: 1px solid #3a3a40;
     background-color: var(--input-color);
     color: #fff;
+    border: none;
+    outline: none;
+    text-transform: none;
 }
 
 #search {
