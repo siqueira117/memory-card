@@ -123,11 +123,15 @@ class GameController extends Controller
 
     private function insertScreenshots($screenshots, $gameModel)
     {
-        $screenshotsUrls = array_map(function($screenshot) {
-            return [ "screenshotUrl" => $screenshot->getUrl(Size::COVER_BIG, true) ];
-        }, $screenshots);
-
-        $gameModel->screenshots()->createMany($screenshotsUrls);
+        if ($screenshots->isEmpty()) {
+            return;
+        }
+    
+        $gameModel->screenshots()->createMany(
+            $screenshots->map(fn($screenshot) => [
+                "screenshotUrl" => $screenshot->getUrl(Size::COVER_BIG, true)
+            ])->toArray()
+        );
     }
 
     private function insertRoms($request, int $gameId)
