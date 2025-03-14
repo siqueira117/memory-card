@@ -22,9 +22,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('sugestoes') ? 'active' : '' }}" href="{{ url('/sugestoes') }}">Sugestões</a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link {{ request()->is('faqs') ? 'active' : '' }}" href="{{ url('/faqs') }}">FAQs</a>
-                </li> --}}
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('changelog') ? 'active' : '' }}" href="{{ url('/changelog') }}">Changelog</a>
+                </li>
             </ul>
 
             <!-- Botões de Login/Cadastro -->

@@ -34,3 +34,7 @@ Route::post('/register', [UserController::class, 'register'])->name('user.regist
 Route::post('/login', [UserController::class, 'login'])->name('user.login');
 
 Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
+
+Route::get('/changelog', function () {
+    return view('changelog');
+})->name('changelog');
