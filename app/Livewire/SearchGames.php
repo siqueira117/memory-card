@@ -42,26 +42,15 @@ class SearchGames extends Component
 
     public function render()
     {
-        // if (strlen($this->search) >= 5) {
-        //     $games = Game::with(['genres'])
-        //         ->orderBy('created_at', 'desc')
-        //         ->where('name', 'ilike', '%'.$this->search.'%')
-        //         ->paginate(30);
-        // } else {
-        //     $games = Game::with(['genres'])
-        //         ->orderBy('created_at', 'desc')
-        //         ->paginate(30);
-        // }
-
         $games = Game::with(['platforms', 'genres'])
         ->when($this->search, fn($query) => 
-            $query->where('name', 'like', '%' . $this->search . '%'))
+            $query->where('name', 'ilike', '%' . $this->search . '%'))
         ->when($this->genre, fn($query) => 
             $query->whereHas('genres', fn($q) => $q->where('tbl_game_genres.genre_id', $this->genre)))
         ->when($this->platform, fn($query) => 
             $query->whereHas('platforms', fn($q) => $q->where('tbl_game_platforms.platform_id', $this->platform)))
         ->orderBy($this->orderBy, ($this->orderDirection ? 'asc' : 'desc'))
-        ->paginate(20);
+        ->paginate(30);
 
         return view('livewire.search-games', compact('games'));
     }
