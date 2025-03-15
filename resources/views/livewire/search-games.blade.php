@@ -13,14 +13,14 @@
         <select class="me-2 form-select select-black" wire:model="genre">
             <option value="" selected>Todos os gêneros</option>
             @foreach($genres as $genre)
-                <option value="{{ $genre->genre_id }}">{{ $genre->name }}</option>
+                <option value="{{ $genre['genre_id'] }}">{{ $genre['name'] }}</option>
             @endforeach
         </select>
     
         <select class="me-2 form-select select-black" wire:model="platform">
             <option value="" selected>Todas as plataformas</option>
             @foreach($platforms as $platform)
-                <option value="{{ $platform->platform_id }}">{{ $platform->name }}</option>
+                <option value="{{ $platform['platform_id'] }}">{{ $platform['name'] }}</option>
             @endforeach
         </select>
     

@@ -47,6 +47,11 @@ class Game extends Model
         return $this->hasMany(GameScreeshot::class, 'game_id', 'game_id');
     }
 
+    public function artworks()
+    {
+        return $this->hasMany(GameArtwork::class, 'game_id', 'game_id');
+    }
+
     public function franchises()
     {
         return $this->belongsToMany(Franchise::class, 'tbl_game_franchises', 'game_id', 'franchise_id');

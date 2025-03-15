@@ -15,17 +15,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Route as FacadesRoute;
 use Illuminate\Support\Facades\Session;
 use MarcReichel\IGDBLaravel\Enums\Image\Size;
+use MarcReichel\IGDBLaravel\Models\Artwork;
 use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
-use MarcReichel\IGDBLaravel\Models\GameMode;
 
 class GameController extends Controller
 {
     public function index()
     {
-        $games      = GameModel::with(['roms', 'genres'])->limit(40)->orderBy('created_at', 'desc')->paginate(20);
+        $games = GameModel::with(['roms', 'genres'])->limit(40)->orderBy('created_at', 'desc')->paginate(20);
 
         $return = [ 'games' => $games, 'allGames' => GameModel::count() ];
 
@@ -56,8 +55,7 @@ class GameController extends Controller
             // Consultando API do IGDB
             $game = $this->getGameData($request);
             if (!$game) {
-                $request->session()->flash('errorMsg',"{$game->name}: Não foi encontrado!"); 
-                return Redirect::back();
+                throw new \Exception("{$game->name}: Não foi encontrado!");
             }
             // ==========================
 
@@ -99,7 +97,7 @@ class GameController extends Controller
             if ($game->screenshots) $this->insertScreenshots($game->screenshots, $gameModel);
 
             $this->insertRoms($request, $game->id);
-    
+
             DB::commit();
 
             $request->session()->flash('successMsg',"{$game->name}: Cadastrado com sucesso!"); 
@@ -188,7 +186,7 @@ class GameController extends Controller
     public function details(string $slug)
     {
         try {
-            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots', 'manuals.platform', 'manuals.language'])->where('slug', $slug)->first();
+            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots', 'manuals.platform', 'manuals.language', 'artworks'])->where('slug', $slug)->first();
             if (!$game) {
                 Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
                 return Redirect::back();
@@ -216,19 +214,21 @@ class GameController extends Controller
         $games = GameModel::all();
         foreach ($games as $game) {
             echo("Atualizando {$game['name']}...\n");
-            $gameIgdb = GameIgdb::where('slug', $game->slug)
-                ->with(['screenshots'])
-                ->first();
-            
+
+            $artworks = Artwork::where('game', $game->game_id)->get();
             $dados = [];
-            if ($gameIgdb->screenshots) {
-                foreach ($gameIgdb->screenshots as $screenshot) {
-                    $url = $screenshot->getUrl(Size::HD, true);
-                    $dados[] = [ "screenshotUrl" => $url ];
+            if (count($artworks)) {
+                foreach ($artworks as $artwork) {
+                    $url = $artwork->getUrl(Size::HD, true);
+                    $dados[] = [ "artworkUrl" => $url ];
                 }
+
+                $game->artworks()->createMany($dados);
+                
+                continue;
             }
 
-            $game->screenshots()->createMany($dados);
+            echo("Sem artworks...\n");
         }
     }
 }
