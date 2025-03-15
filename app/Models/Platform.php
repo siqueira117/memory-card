@@ -31,4 +31,9 @@ class Platform extends Model
     {
         return $this->hasOne(PlatformType::class);
     }
+
+    public function manuals()
+    {
+        return $this->hasMany(GameManual::class, 'platform_id', 'platform_id');
+    }
 }

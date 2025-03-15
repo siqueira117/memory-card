@@ -56,4 +56,9 @@ class Game extends Model
     {
         return $this->belongsToMany(Theme::class, 'tbl_game_themes', 'game_id', 'theme_id');
     }
+
+    public function manuals()
+    {
+        return $this->hasMany(GameManual::class, 'game_id', 'game_id');
+    }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FaqsController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\GameManualController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\MasterChiefController;
 use App\Http\Controllers\SuggestionController;
@@ -18,6 +19,8 @@ if (getenv("APP_ENV") === 'local') {
 }
 
 Route::post('/addGame', [GameController::class, 'store'])->name('game.store');
+Route::post('/addManual', [GameManualController::class, 'store'])->name('manual.store');
+
 Route::get('/game/{slug}', [GameController::class, 'details'])->name('game.details');
 // Route::get('/updateGames', [GameController::class, 'update'])->name('game.updates');
 

@@ -7,6 +7,7 @@ use App\Models\Game as GameModel;
 use App\Models\GameGenres;
 use App\Models\GamePlatforms;
 use App\Models\GameRom;
+use App\Models\Language;
 use App\Models\Platform;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +32,9 @@ class GameController extends Controller
         if (Auth::check() && Auth::user()->type === 'adm') {
             $platformsToSelect = Platform::orderBy('name', 'asc')->get();
             $return['platformsToSelect'] = $platformsToSelect;
+
+            $languages = Language::all();
+            $return["languages"] = $languages;
         }
 
         return view('index', $return);
@@ -184,7 +188,7 @@ class GameController extends Controller
     public function details(string $slug)
     {
         try {
-            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots'])->where('slug', $slug)->first();
+            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots', 'manuals.platform', 'manuals.language'])->where('slug', $slug)->first();
             if (!$game) {
                 Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
                 return Redirect::back();

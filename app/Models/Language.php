@@ -27,4 +27,8 @@ class Language extends Model
      */
     protected $fillable = ['name', 'locale', 'native_name'];
 
+    public function manuals()
+    {
+        return $this->hasMany(GameManual::class, 'language_id', 'language_id');
+    }
 }

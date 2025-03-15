@@ -4,26 +4,27 @@
         @auth
             @if( Auth::user()->type === 'adm' )
                 <button class="btn btn-custom ms-2 w-20" data-bs-toggle="modal" data-bs-target="#gameModal">Add game</button>
+                <button class="btn btn-custom ms-2 w-20" data-bs-toggle="modal" data-bs-target="#gameManualModal">Add manual</button>
             @endif
         @endauth
     </div>
     <!-- Filtros -->
     <div class="d-flex mb-3">
-        <select class="me-2" wire:model="genre">
+        <select class="me-2 form-select select-black" wire:model="genre">
             <option value="" selected>Todos os gêneros</option>
             @foreach($genres as $genre)
                 <option value="{{ $genre->genre_id }}">{{ $genre->name }}</option>
             @endforeach
         </select>
     
-        <select class="me-2" wire:model="platform">
+        <select class="me-2 form-select select-black" wire:model="platform">
             <option value="" selected>Todas as plataformas</option>
             @foreach($platforms as $platform)
                 <option value="{{ $platform->platform_id }}">{{ $platform->name }}</option>
             @endforeach
         </select>
     
-        <select class="me-2" wire:model="orderBy">
+        <select class="me-2 form-select select-black" wire:model="orderBy">
             <option value="created_at" selected>Ordernar por Novidade</option>
             <option value="name">Ordenar por Nome</option>
             <option value="first_release_date">Ordenar por Data de Lançamento</option>

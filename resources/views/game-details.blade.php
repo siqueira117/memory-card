@@ -91,15 +91,34 @@
                 </p>
             @endif
 
-            <div class="dropdown w-50">
-                <a class="btn btn-custom my-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Download
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach ($platforms as $platform)
-                        <li><a class="dropdown-item" href="{{ $platform['romUrl'] }}">{{ $platform['platform_name'] }}</a></li>
-                    @endforeach
-                </ul>
+            <div class="mx-auto w-50">
+                @if(isset($game->manuals) && $game->manuals->isNotEmpty())
+                    <div class="dropdown w-100">
+                        <a class="btn btn-custom dropdown-toggle" type="button" id="manualDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Baixar Manual
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="manualDropdown">
+                            @foreach($game->manuals as $manual)
+                                <li>
+                                    <a class="dropdown-item" href="{{ $manual->url }}" target="_blank">
+                                        📄 {{ $manual->platform->name }} - {{ $manual->language->locale }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <div class="dropdown w-100">
+                    <a class="btn btn-custom my-3 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Download
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach ($platforms as $platform)
+                            <li><a class="dropdown-item" href="{{ $platform['romUrl'] }}">{{ $platform['platform_name'] }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -124,17 +143,3 @@
     </div>
 </div>
 @endsection
-
-@if(isset($game['screenshots']) && count($game['screenshots']) > 0)
-    @section('script')
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.screenshot-thumbnail').forEach(item => {
-                    item.addEventListener('click', function () {
-                        document.getElementById('modalImage').src = this.getAttribute('data-src');
-                    });
-                });
-            });
-        </script>
-    @endsection
-@endif

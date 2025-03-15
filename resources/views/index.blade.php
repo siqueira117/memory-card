@@ -19,19 +19,15 @@
                 @endif
             @endif
         @endauth
-        {{-- <h1 class="text-center mb-4">
-            <img id="logo" src="{{ asset('img/logo_purple.png') }}" alt="memorycard">
-        </h1> --}}
 
         @livewire('search-games', ['allGames' => $allGames])
     </div>
 
     @auth
         @if (Auth::user()->type === 'adm')
-            <x-modal-add-game :platforms="$platformsToSelect" />
+            <x-modal-add-game :platforms="$platformsToSelect" :languages="$languages" />
+            <x-modal-add-game-manual :platforms="$platformsToSelect" :languages="$languages" />
         @endif
     @endauth
-
-    {{-- <x-modal-login /> --}}
 
 @endsection

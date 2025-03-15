@@ -1,11 +1,12 @@
 :root {
     --backgroud-color-black: #202024;
     
-    --btn-color: #56da3e;
+    --btn-color: #2d961b;
     --btn-color-hover: #8be574;
 
     --input-color: #2a2a2e;
     --bg-dark: #282828;
+    --dark-color: #2a2a2e;
 }
 
 body {
@@ -37,7 +38,7 @@ body {
     }
 }
 
-input, select, #search {
+input, #search {
     width: 100%;
     padding: 10px;
     border-radius: 5px;
@@ -48,6 +49,42 @@ input, select, #search {
     outline: none;
     text-transform: none;
 }
+
+.select-black {
+    background-color: var(--input-color);
+    color: #fff;
+    border: none;
+}
+
+.btn-accordion {
+    background-color: var(--dark-color);
+    color: #fff;
+}
+
+.container-item-faq {
+    border-color: var(--dark-color);
+}
+
+.accordion-button::after {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(54%) saturate(0%) hue-rotate(5deg) brightness(110%) contrast(101%);;
+}
+
+.accordion-button:not(.collapsed)::after {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(54%) saturate(0%) hue-rotate(5deg) brightness(110%) contrast(101%);;
+}
+
+/* Alterar cor de fundo do botão */
+.accordion-button {
+    background-color: var(--dark-color); /* Altere para a cor desejada */
+    color: #ffffff; /* Cor do texto */
+}
+
+/* Quando o accordion está ativo */
+.accordion-button:not(.collapsed) {
+    background-color: #34495e; /* Cor diferente quando expandido */
+    color: #ffffff;
+}
+
 
 #search {
     width: 80%;

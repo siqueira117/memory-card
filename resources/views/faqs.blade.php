@@ -14,7 +14,7 @@
         <!-- Pergunta 1 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq1">
-                <button class="accordion-button btn-faq" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1">
+                <button class="accordion-button btn-accordion" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1">
                     O que é o MemoryCard?
                 </button>
             </h2>
@@ -42,7 +42,7 @@
         <!-- Pergunta 3 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq3">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse3">
                     Como posso sugerir um jogo para ser adicionado?
                 </button>
             </h2>
@@ -56,7 +56,7 @@
         <!-- Pergunta 4 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq4">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse4">
                     Posso contribuir com ROMs criadas pela comunidade?
                 </button>
             </h2>
@@ -70,7 +70,7 @@
         <!-- Pergunta 5 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq5">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse5">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse5">
                     Preciso criar uma conta para baixar ROMs?
                 </button>
             </h2>
@@ -84,7 +84,7 @@
         <!-- Pergunta 6 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq6">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse6">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse6">
                     Como os jogos são escolhidos para serem adicionados?
                 </button>
             </h2>
@@ -98,7 +98,7 @@
         <!-- Pergunta 7 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq7">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse7">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse7">
                     Os jogos são testados antes de serem adicionados?
                 </button>
             </h2>
@@ -112,7 +112,7 @@
         <!-- Pergunta 8 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq8">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse8">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse8">
                     Posso baixar jogos diretamente para meu console?
                 </button>
             </h2>
@@ -126,7 +126,7 @@
         <!-- Pergunta 9 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq9">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse9">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse9">
                     Como posso ajudar na preservação dos jogos?
                 </button>
             </h2>
@@ -140,7 +140,7 @@
         <!-- Pergunta 10 -->
         <div class="accordion-item container-item-faq">
             <h2 class="accordion-header" id="faq10">
-                <button class="accordion-button btn-faq collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse10">
+                <button class="accordion-button btn-accordion collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse10">
                     O MemoryCard aceita doações?
                 </button>
             </h2>
