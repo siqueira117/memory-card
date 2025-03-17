@@ -22,9 +22,6 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('sugestoes') ? 'active' : '' }}" href="{{ url('/sugestoes') }}">Sugestões</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('changelog') ? 'active' : '' }}" href="{{ url('/changelog') }}">Changelog</a>
-                </li>
             </ul>
 
             <!-- Botões de Login/Cadastro -->
@@ -35,7 +32,17 @@
                             {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu">
-                            {{-- <li><a class="dropdown-item" href="{{ url('/perfil') }}">Meu Perfil</a></li> --}}
+                            <li>
+                                <a class="dropdown-item {{ request()->is('/changelog') ? 'active' : '' }}" href="{{ route("changelog") }}">
+                                    Changelog
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ request()->is('/logs') ? 'active' : '' }}" href="{{ route("logs.index") }}">
+                                    Logs
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('user.logout') }}">
                                     @csrf

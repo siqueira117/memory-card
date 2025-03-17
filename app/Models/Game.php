@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\GameCreated;
 use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
@@ -26,6 +27,13 @@ class Game extends Model
      * @var array<int, string>
      */
     protected $fillable = ['game_id', 'name', 'summary', 'storyline', 'slug', 'coverUrl', 'first_release_date', 'total_rating'];
+
+    protected static function booted()
+    {
+        static::created(function ($game) {
+            event(new GameCreated($game));
+        });
+    }
 
     public function platforms()
     {

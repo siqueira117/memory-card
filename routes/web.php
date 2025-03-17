@@ -4,6 +4,7 @@ use App\Http\Controllers\FaqsController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameManualController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\MasterChiefController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\UserController;
@@ -37,6 +38,8 @@ Route::post('/register', [UserController::class, 'register'])->name('user.regist
 Route::post('/login', [UserController::class, 'login'])->name('user.login');
 
 Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
+
+Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
 Route::get('/changelog', function () {
     return view('changelog');

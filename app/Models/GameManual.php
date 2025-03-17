@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\ManualCreated;
 use Illuminate\Database\Eloquent\Model;
 
 class GameManual extends Model
@@ -22,9 +23,16 @@ class GameManual extends Model
 
     protected $fillable = ['url', 'game_id', 'platform_id', 'language_id'];
 
+    protected static function booted()
+    {
+        static::created(function ($manual) {
+            event(new ManualCreated($manual));
+        });
+    }
+
     public function game()
     {
-        return $this->belongsTo(Game::class);
+        return $this->belongsTo(Game::class, 'game_id', 'game_id');
     }
 
     public function platform()
