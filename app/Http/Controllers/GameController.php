@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Franchise;
 use App\Models\Game as GameModel;
 use App\Models\GameGenres;
+use App\Models\GameManual;
 use App\Models\GamePlatforms;
 use App\Models\GameRom;
 use App\Models\Language;
@@ -59,6 +60,8 @@ class GameController extends Controller
             }
             // ==========================
 
+            DB::beginTransaction();
+
             // Verificando se temos esse jogo cadastrado
             $gameResult = GameModel::where('game_id', $game->id)->get();
             if (count($gameResult)) {
@@ -70,8 +73,6 @@ class GameController extends Controller
                 return Redirect::back();
             }
             // ==========================
-
-            DB::beginTransaction();
 
             $gameModel = GameModel::create([
                 "game_id"   => $game->id,
@@ -86,6 +87,34 @@ class GameController extends Controller
     
             if (!$gameModel) throw new \Exception("Não foi possível adicionar o jogo!");
 
+            // Cadastrando manual
+            if ($request->manualUrl || $request->manualPlatform || $request->manualLanguage) {
+                $manualDados = [
+                    'manualurl'      => $request->manualUrl, 
+                    'manualPlatform' => $request->manualPlatform,
+                    'manualLanguage' => $request->manualLanguage
+                ];
+
+                $validator = Validator::make($manualDados, [
+                    'manualurl'       => 'required',
+                    'manualPlatform'  => 'required',
+                    'manualLanguage'  => 'required'
+                ]);
+                
+                if (!$validator->passes()) {
+                    return Redirect::back()->withErrors($validator);
+                }
+
+                $gameManual = GameManual::create([
+                    'url'           => $request->manualUrl,
+                    'game_id'       => $game->id,
+                    'language_id'   => $request->manualLanguage,
+                    'platform_id'   => $request->manualPlatform
+                ]);
+
+                if (!$gameManual) throw new \Exception("Não foi possível adicionar o manual!");
+            }
+
             if ($game->genres) $this->insertGameGenres($game->genres, $game->id);
 
             if ($game->platforms) $this->insertGamePlatforms($game->platforms, $game->id);
@@ -95,6 +124,8 @@ class GameController extends Controller
             if ($game->themes) $this->insertGameThemes($game->themes, $gameModel);
 
             if ($game->screenshots) $this->insertScreenshots($game->screenshots, $gameModel);
+
+            $this->insertArtworks($game->id, $gameModel);
 
             $this->insertRoms($request, $game->id);
 
@@ -134,6 +165,20 @@ class GameController extends Controller
                 "screenshotUrl" => $screenshot->getUrl(Size::COVER_BIG, true)
             ])->toArray()
         );
+    }
+
+    private function insertArtworks(int $id, $gameModel)
+    {
+        $artworks = Artwork::where('game', $id)->get();
+        $dados = [];
+        if (count($artworks)) {
+            foreach ($artworks as $artwork) {
+                $url = $artwork->getUrl(Size::HD, true);
+                $dados[] = [ "artworkUrl" => $url ];
+            }
+
+            $gameModel->artworks()->createMany($dados);
+        }
     }
 
     private function insertRoms($request, int $gameId)

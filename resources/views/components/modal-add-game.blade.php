@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="language-options-manual" class="form-label text-light">Plataforma do Manual:</label>
-                                    <select class="form-select select-black" aria-label="platforms" name="manualPlatform" required>
+                                    <select class="form-select select-black" aria-label="platforms" name="manualLanguage" required>
                                         <option selected disabled ="*">Linguagens</option>
                                         @foreach ($languages as $language)
                                             <option value="{{ $language->language_id }}">{{ $language->native_name }} - {{ $language->locale }}</option>
