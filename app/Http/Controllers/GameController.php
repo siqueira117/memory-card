@@ -2,21 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Franchise;
+use App\Models\Collection as ModelsCollection;
 use App\Models\Game as GameModel;
-use App\Models\GameGenres;
-use App\Models\GameManual;
-use App\Models\GamePlatforms;
-use App\Models\GameRom;
-use App\Models\Language;
-use App\Models\Platform;
+use App\Models\{Franchise, GameGenres, Language, Platform, GameRom, GameManual, GamePlatforms};
+use Illuminate\Support\Facades\{Auth, DB, Log, Redirect, Session};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use MarcReichel\IGDBLaravel\Enums\Image\Size;
 use MarcReichel\IGDBLaravel\Models\Artwork;
 use MarcReichel\IGDBLaravel\Models\Game as GameIgdb;
@@ -42,7 +34,7 @@ class GameController extends Controller
     
     public function store(Request $request)
     {
-        try {
+        try {            
             $validator = Validator::make($request->all(), [
                 'gameId'        => 'required',
                 'gameDownload'  => 'required',
@@ -125,6 +117,8 @@ class GameController extends Controller
 
             if ($game->screenshots) $this->insertScreenshots($game->screenshots, $gameModel);
 
+            if ($game->collections) $this->insertGameCollections($game->collections, $gameModel);
+
             $this->insertArtworks($game->id, $gameModel);
 
             $this->insertRoms($request, $game->id);
@@ -194,18 +188,34 @@ class GameController extends Controller
 
     private function insertGameFranchises(Collection $franchises, $gameModel) 
     {
+        Log::info(__FUNCTION__ . "::START");
+
         $franchisesIds = [];
         foreach ($franchises as $franchise) {
-            $newFranchise = Franchise::firstOrCreate([
-                'franchise_id' => $franchise->id, 
-                'name' => $franchise->name, 
-                'slug' => $franchise->slug
-            ]);
+            $newFranchise = Franchise::firstOrCreate(
+                [ 'franchise_id' => $franchise->id, 'name' => $franchise->name, 'slug' => $franchise->slug ]
+            );
 
             $franchisesIds[] = $newFranchise->franchise_id;
         }
 
         $gameModel->franchises()->attach($franchisesIds);
+        Log::info(__FUNCTION__ . "::END");
+    }
+
+    private function insertGameCollections(Collection $collections, $gameModel)
+    {
+        $collectionIds = [];
+        foreach ($collections as $collection) {
+            $newCollection = ModelsCollection::firstOrCreate(
+                ['collection_id' => $collection->id], 
+                ['name' => $collection->name, 'slug' => $collection->slug]
+            );
+
+            $collectionIds[] = $newCollection->collection_id;
+        }
+
+        $gameModel->collections()->syncWithoutDetaching($collectionIds);
     }
 
     private function getGameData(Request $request)
@@ -213,12 +223,12 @@ class GameController extends Controller
         if ($request->gameId) {
             return GameIgdb::where('id', '=', intval($request->gameId))
                 ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots'])
+                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections'])
                 ->first();
         } else {
             return GameIgdb::search($request->gameName)
                 ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots'])
+                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections'])
                 ->first();
         }
     }
@@ -259,21 +269,30 @@ class GameController extends Controller
         $games = GameModel::all();
         foreach ($games as $game) {
             echo("Atualizando {$game['name']}...\n");
-
-            $artworks = Artwork::where('game', $game->game_id)->get();
-            $dados = [];
-            if (count($artworks)) {
-                foreach ($artworks as $artwork) {
-                    $url = $artwork->getUrl(Size::HD, true);
-                    $dados[] = [ "artworkUrl" => $url ];
-                }
-
-                $game->artworks()->createMany($dados);
-                
+    
+            $gameIgdb = GameIgdb::with(['collections'])->where('slug', $game->slug)->first();
+            if (!$gameIgdb || !$gameIgdb->collections) {
+                echo("Sem collections...\n");
                 continue;
             }
-
-            echo("Sem artworks...\n");
+    
+            foreach ($gameIgdb->collections as $collection) {
+                // Verifica se a collection já existe antes de adicionar
+                $collectionModel = ModelsCollection::firstOrCreate(
+                    ['collection_id' => $collection->id], // Campos para buscar
+                    ['name' => $collection->name, 'slug' => $collection->slug] // Campos para preencher caso não exista
+                );
+    
+                // Adiciona a collection ao jogo se ainda não estiver associada
+                if (!$game->collections()->where('tbl_game_collections.collection_id', $collectionModel->collection_id)->exists()) {
+                    $game->collections()->attach($collectionModel->collection_id);
+                    echo("Collection '{$collection->name}' adicionada ao jogo {$game['name']}!\n");
+                } else {
+                    echo("Collection '{$collection->name}' já está associada a {$game['name']}.\n");
+                }
+            }
         }
     }
+    
+    
 }

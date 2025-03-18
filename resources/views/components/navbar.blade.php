@@ -33,7 +33,7 @@
                         <span class="visually-hidden">unread messages</span>
                     </div>
                     <ul class="dropdown-menu" id="notification-list" style="max-width: 50vh">
-                        <li class="dropdown-item text-muted">Carregando...</li>
+                        <li class="dropdown-item text-muted" style="font-size: smaller;">Carregando...</li>
                     </ul>
                 </li>
             </ul>
