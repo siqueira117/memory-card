@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_logs', function (Blueprint $table) {
-            $table->id('log_id');
+        Schema::create('tbl_activities', function (Blueprint $table) {
+            $table->id('activity_id');
             $table->string('description');
             $table->enum('model_type', ['game', 'manual', 'post']);
             $table->unsignedBigInteger('model_id');
+            $table->string("model_uri", 250);
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_logs');
+        Schema::dropIfExists('tbl_activities');
     }
 };

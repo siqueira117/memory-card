@@ -22,6 +22,20 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('sugestoes') ? 'active' : '' }}" href="{{ url('/sugestoes') }}">Sugestões</a>
                 </li>
+                <li class="nav-item dropdown" style="max-width: 100%;">
+                    <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" onclick="markNotificationsAsRead()">
+                        <i class="fa-solid fa-bell"></i>
+                        {{-- <span class="badge bg-danger" id="notification-count">0</span> --}}
+                    </a>
+                    <div>
+                        <span class="position-absolute top-0 start-100 translate-middle badge bg-danger rounded-pill" id="notification-count">
+                            0
+                        <span class="visually-hidden">unread messages</span>
+                    </div>
+                    <ul class="dropdown-menu" id="notification-list" style="max-width: 50vh">
+                        <li class="dropdown-item text-muted">Carregando...</li>
+                    </ul>
+                </li>
             </ul>
 
             <!-- Botões de Login/Cadastro -->
@@ -37,11 +51,11 @@
                                     Changelog
                                 </a>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <a class="dropdown-item {{ request()->is('/logs') ? 'active' : '' }}" href="{{ route("logs.index") }}">
                                     Logs
                                 </a>
-                            </li>
+                            </li> --}}
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('user.logout') }}">

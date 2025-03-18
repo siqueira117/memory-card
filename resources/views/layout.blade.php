@@ -13,7 +13,7 @@
     @livewireStyles
 </head>
 <body>
-    <div id="page-container">
+    <div id="container">
         <x-navbar />
 
         <div id="content-wrapper">
@@ -38,6 +38,49 @@
                 });
             });
         });
+    </script>
+    <script>
+        function fetchNotifications() {
+            fetch("{{ route('notifications') }}")
+                .then(response => response.json())
+                .then(data => {
+                    let notificationCount = document.getElementById('notification-count');
+                    let notificationList = document.getElementById('notification-list');
+    
+                    notificationCount.innerText = data.count;
+                    notificationList.innerHTML = "";
+    
+                    if (data.notifications.length > 0) {
+                        data.notifications.forEach(notification => {
+                            let item = document.createElement('li');
+                            let link = document.createElement('a');
+                            link.className = "dropdown-item";
+
+                            link.innerText = notification.description;
+                            link.setAttribute('href', notification.model_uri);
+                            link.setAttribute('style', "text-wrap: auto; font-size: smaller;");
+
+                            item.appendChild(link);
+                            notificationList.appendChild(item);
+                        });
+                    } else {
+                        let empty = document.createElement('li');
+                        empty.className = "dropdown-item text-muted";
+                        empty.innerText = "Sem notificações";
+                        notificationList.appendChild(empty);
+                    }
+                });
+        }
+    
+        function markNotificationsAsRead() {
+            fetch("{{ route('notifications.read') }}", { method: "POST", headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" } })
+                .then(response => response.json())
+                .then(() => {
+                    document.getElementById('notification-count').innerText = "0";
+                });
+        }
+    
+        document.addEventListener("DOMContentLoaded", fetchNotifications);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @livewireScripts

@@ -1,23 +1,17 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\FaqsController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameManualController;
 use App\Http\Controllers\IndexController;
-use App\Http\Controllers\LogController;
-use App\Http\Controllers\MasterChiefController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Livewire\Auth\Register;
-use Livewire\Livewire;
 
 Route::get('/', [GameController::class, 'index'])->name('index');
 Route::get('/sobre', [IndexController::class, 'aboutUs'])->name('about.us');
-
-if (getenv("APP_ENV") === 'local') {
-    Route::get('/masterchief', [GameController::class, 'index'])->name('masterchief');
-}
 
 Route::post('/addGame', [GameController::class, 'store'])->name('game.store');
 Route::post('/addManual', [GameManualController::class, 'store'])->name('manual.store');
@@ -39,8 +33,14 @@ Route::post('/login', [UserController::class, 'login'])->name('user.login');
 
 Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
 
-Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+Route::get('/updates', [ActivityController::class, 'index'])->name('logs.index');
 
 Route::get('/changelog', function () {
     return view('changelog');
 })->name('changelog');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'getUnreadNotifications'])->name('notifications');
+    Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+});
+

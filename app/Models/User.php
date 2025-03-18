@@ -45,4 +45,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function activities()
+    {
+        return $this->belongsToMany(Activity::class, 'tbl_activity_user', 'user_id', 'activity_id')->withPivot('read_at');
+    }
+
 }
