@@ -6,6 +6,14 @@
     <p class="text-muted">Últimas atualizações e melhorias do site.</p>
 
     <div class="bg-dark-custom p-4 rounded mb-4">
+        <h4 class="text-success" style="font-family: FreeMono, monospace">v1.4.0 - 18/03/2025</h4>
+        <ul class="text-white">
+            <li>Adicionando sistema de notificações</li>
+            <li>Refatorando consultas ao banco, melhorando performance do site</li>
+        </ul>
+    </div>
+
+    <div class="bg-dark-custom p-4 rounded mb-4">
         <h4 class="text-success" style="font-family: FreeMono, monospace">v1.3.0 - 15/03/2025</h4>
         <ul class="text-white">
             <li>Visualização de screenshots e artworks</li>
