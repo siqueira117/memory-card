@@ -34,118 +34,104 @@ class GameController extends Controller
     
     public function store(Request $request)
     {
-        try {            
-            $validator = Validator::make($request->all(), [
-                'gameId'        => 'required',
-                'gameDownload'  => 'required',
-                'gamePlatform'  => 'required'
-            ]);
-            
-            if (!$validator->passes()) {
-                return Redirect::back()->withErrors($validator);
-            }
+        $validator = Validator::make($request->all(), [
+            'gameId'        => 'required|integer',
+            'gameDownload'  => 'required|url',
+            'gamePlatform'  => 'required|integer'
+        ]);
     
-            // Consultando API do IGDB
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator);
+        }
+    
+        try {
+            DB::beginTransaction();
+    
+            // Buscar jogo no IGDB
             $game = $this->getGameData($request);
             if (!$game) {
-                throw new \Exception("{$game->name}: Não foi encontrado!");
+                throw new \Exception("Jogo não encontrado no IGDB.");
             }
-            // ==========================
-
-            DB::beginTransaction();
-
-            // Verificando se temos esse jogo cadastrado
-            $gameResult = GameModel::where('game_id', $game->id)->get();
-            if (count($gameResult)) {
-
-                // Caso o jogo já esteja cadastrado, apenas adiciona a ROM
-                $this->insertRoms($request, $game->id);
-
-                $request->session()->flash('successMsg',"{$game->name}: Cadastrado com sucesso!"); 
-                return Redirect::back();
-            }
-            // ==========================
-
-            $gameModel = GameModel::create([
-                "game_id"   => $game->id,
-                "name"      => $game->name,
-                "slug"      => $game->slug,
-                "summary"   => $game->summary ?? null,
-                "storyline" => $game->storyline ?? null,
-                "first_release_date" => $game->first_release_date ?? null,
-                "total_rating" => $game->total_rating ?? null,
-                "coverUrl"  => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
+    
+            // Verificar se já existe no banco
+            $gameModel = GameModel::firstOrCreate([
+                'game_id' => $game->id
+            ], [
+                "name"                  => $game->name,
+                "slug"                  => $game->slug,
+                "summary"               => $game->summary               ?? null,
+                "storyline"             => $game->storyline             ?? null,
+                "first_release_date"    => $game->first_release_date    ?? null,
+                "total_rating"          => $game->total_rating          ?? null,
+                "coverUrl"              => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
             ]);
     
-            if (!$gameModel) throw new \Exception("Não foi possível adicionar o jogo!");
-
-            // Cadastrando manual
-            if ($request->manualUrl || $request->manualPlatform || $request->manualLanguage) {
-                $manualDados = [
-                    'manualurl'      => $request->manualUrl, 
-                    'manualPlatform' => $request->manualPlatform,
-                    'manualLanguage' => $request->manualLanguage
-                ];
-
-                $validator = Validator::make($manualDados, [
-                    'manualurl'       => 'required',
-                    'manualPlatform'  => 'required',
-                    'manualLanguage'  => 'required'
-                ]);
-                
-                if (!$validator->passes()) {
-                    return Redirect::back()->withErrors($validator);
-                }
-
-                $gameManual = GameManual::create([
-                    'url'           => $request->manualUrl,
-                    'game_id'       => $game->id,
-                    'language_id'   => $request->manualLanguage,
-                    'platform_id'   => $request->manualPlatform
-                ]);
-
-                if (!$gameManual) throw new \Exception("Não foi possível adicionar o manual!");
+            // Se o jogo já existia, apenas insere a ROM
+            if (!$gameModel->wasRecentlyCreated) {
+                $this->insertRoms($request, $game->id);
+            
+                $request->session()->flash('successMsg', "{$game->name}: ROM adicionada com sucesso!");
+                return Redirect::back();
             }
 
-            if ($game->genres) $this->insertGameGenres($game->genres, $game->id);
-
-            if ($game->platforms) $this->insertGamePlatforms($game->platforms, $game->id);
-
-            if ($game->franchises) $this->insertGameFranchises($game->franchises, $gameModel);
-
-            if ($game->themes) $this->insertGameThemes($game->themes, $gameModel);
-
-            if ($game->screenshots) $this->insertScreenshots($game->screenshots, $gameModel);
-
-            if ($game->collections) $this->insertGameCollections($game->collections, $gameModel);
-
-            $this->insertArtworks($game->id, $gameModel);
-
+            // Inserir ROMs
             $this->insertRoms($request, $game->id);
-
+    
+            // Inserir coleções, franquias, temas e plataformas
+            $this->insertRelations($game, $gameModel);
+    
             DB::commit();
-
-            $request->session()->flash('successMsg',"{$game->name}: Cadastrado com sucesso!"); 
+    
+            $request->session()->flash('successMsg', "{$game->name}: Cadastrado com sucesso!");
             return Redirect::back();
         } catch (\Exception $e) {
             DB::rollBack();
-            $request->session()->flash('errorMsg', $e->getMessage()); 
-            return Redirect::back();
+            Log::error("Erro ao cadastrar jogo: " . $e->getMessage());
+            return Redirect::back()->with('errorMsg', 'Erro ao cadastrar jogo.');
         }
     }
-
-    private function insertGameGenres(array $genres, int $gameId)
+    
+    private function insertRelations($game, $gameModel)
     {
-        foreach ($genres as $genreId) {
-            GameGenres::create([ 'game_id' => $gameId, 'genre_id' => $genreId ]);
+        if ($game->genres) {
+            $gameModel->genres()->syncWithoutDetaching($game->genres);
         }
+
+        if ($game->platforms) {
+            $gameModel->platforms()->syncWithoutDetaching($game->platforms);
+        }
+
+        if ($game->franchises) {
+            $this->attachOrCreate(Franchise::class, $game->franchises, 'franchise_id', $gameModel->franchises());
+        }
+
+        if ($game->collections) {
+            $this->attachOrCreate(ModelsCollection::class, $game->collections, 'collection_id', $gameModel->collections());
+        }
+
+        if ($game->themes) {
+            $gameModel->themes()->syncWithoutDetaching($game->themes);
+        }
+
+        if ($game->screenshots) {
+            $this->insertScreenshots($game->screenshots, $gameModel);
+        }
+
+        $this->insertArtworks($game->id, $gameModel);
     }
 
-    private function insertGamePlatforms(array $platforms, int $gameId)
+    private function attachOrCreate($model, $items, $idField, $relation)
     {
-        foreach ($platforms as $platformsId) {
-            GamePlatforms::create([ 'game_id' => $gameId, 'platform_id' => $platformsId ]);
+        $ids = [];
+        foreach ($items as $item) {
+            $record = $model::firstOrCreate(
+                [$idField => $item->id],
+                ['name' => $item->name, 'slug' => $item->slug]
+            );
+            $ids[] = $record->$idField;
         }
+
+        $relation->syncWithoutDetaching($ids);
     }
 
     private function insertScreenshots($screenshots, $gameModel)
@@ -186,89 +172,42 @@ class GameController extends Controller
         GameRom::create($gameRom);
     }
 
-    private function insertGameFranchises(Collection $franchises, $gameModel) 
-    {
-        Log::info(__FUNCTION__ . "::START");
-
-        $franchisesIds = [];
-        foreach ($franchises as $franchise) {
-            $newFranchise = Franchise::firstOrCreate(
-                [ 'franchise_id' => $franchise->id, 'name' => $franchise->name, 'slug' => $franchise->slug ]
-            );
-
-            $franchisesIds[] = $newFranchise->franchise_id;
-        }
-
-        $gameModel->franchises()->attach($franchisesIds);
-        Log::info(__FUNCTION__ . "::END");
-    }
-
-    private function insertGameCollections(Collection $collections, $gameModel)
-    {
-        $collectionIds = [];
-        foreach ($collections as $collection) {
-            $newCollection = ModelsCollection::firstOrCreate(
-                ['collection_id' => $collection->id], 
-                ['name' => $collection->name, 'slug' => $collection->slug]
-            );
-
-            $collectionIds[] = $newCollection->collection_id;
-        }
-
-        $gameModel->collections()->syncWithoutDetaching($collectionIds);
-    }
-
     private function getGameData(Request $request)
     {
-        if ($request->gameId) {
-            return GameIgdb::where('id', '=', intval($request->gameId))
-                ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections'])
-                ->first();
-        } else {
-            return GameIgdb::search($request->gameName)
-                ->orderBy('first_release_date', 'asc')
-                ->with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections'])
-                ->first();
-        }
-    }
-
-    private function insertGameThemes(array $themes, $gameModel)
-    {
-        $gameModel->themes()->attach($themes);
+        $query = GameIgdb::with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections'])
+            ->orderBy('first_release_date', 'asc');
+    
+        return $request->gameId
+            ? $query->where('id', $request->gameId)->first()
+            : $query->search($request->gameName)->first();
     }
 
     public function details(string $slug)
     {
         try {
-            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots', 'manuals.platform', 'manuals.language', 'artworks', 'collections'])->where('slug', $slug)->first();
-            if (!$game) {
-                Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
-                return Redirect::back();
-            }
-
-            $platforms = $game->roms->map(fn ($rom) =>
-                [
-                    'platform_name' => $rom->platform->name,
-                    'romUrl' => $rom->romUrl,
-                ]
-            );
-
+            $game = GameModel::with([
+                'roms.platform', 'genres', 'platforms', 'franchises',
+                'screenshots', 'manuals.platform', 'manuals.language', 
+                'artworks', 'collections'
+            ])->where('slug', $slug)->firstOrFail();
+    
+            $platforms = $game->roms->map(fn ($rom) => [
+                'platform_name' => $rom->platform->name,
+                'romUrl' => $rom->romUrl,
+            ]);
+    
             $relatedGames = GameModel::whereHas('franchises', function ($query) use ($game) {
                 $query->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
-            })->where('game_id', '!=', $game->game_id)->get();
-            
-            $collections = GameModel::whereHas('collections', function ($query) use ($game) {
+            })->orWhereHas('collections', function ($query) use ($game) {
                 $query->whereIn('tbl_game_collections.collection_id', $game->collections->pluck('collection_id'));
             })->where('game_id', '!=', $game->game_id)->get();
-            
-            $newRelation = $relatedGames->merge($collections);
-
-            return view('game-details', ['game' => $game, 'platforms' => $platforms, 'relatedGames' => $newRelation]);
+    
+            return view('game-details', compact('game', 'platforms', 'relatedGames'));
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            Log::error("Erro ao buscar detalhes do jogo: " . $e->getMessage());
+            return Redirect::back()->with('errorMsg', 'Erro ao carregar detalhes.');
         }
-    }
+    }    
 
     public function update()
     {
