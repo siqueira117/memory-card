@@ -73,6 +73,9 @@ class GameController extends Controller
                 $request->session()->flash('successMsg', "{$game->name}: ROM adicionada com sucesso!");
                 return Redirect::back();
             }
+            
+            // Inserir manual
+            $this->insertManual($request, $game);
 
             // Inserir ROMs
             $this->insertRoms($request, $game->id);
@@ -91,6 +94,47 @@ class GameController extends Controller
         }
     }
     
+    private function insertManual($request, $game)
+    {
+        if ($request->manualUrl || $request->manualPlatform || $request->manualLanguage) {
+            // Dados do manual que estão sendo enviados
+            $manualDados = [
+                'manualurl' => $request->manualUrl,
+                'manualPlatform' => $request->manualPlatform,
+                'manualLanguage' => $request->manualLanguage
+            ];
+        
+            // Validação dos dados
+            $validator = Validator::make($manualDados, [
+                'manualurl' => 'required|url',
+                'manualPlatform' => 'required|integer|exists:tbl_platforms,id',
+                'manualLanguage' => 'required|integer|exists:tbl_languages,id'
+            ]);
+        
+            if ($validator->fails()) {
+                // Se a validação falhar, redireciona de volta com os erros
+                return Redirect::back()->withErrors($validator);
+            }
+        
+            // Criar ou verificar se o manual já existe
+            $gameManual = GameManual::firstOrCreate(
+                [ 'game_id' => $game->id, 'platform_id' => $request->manualPlatform, 'language_id' => $request->manualLanguage ],
+                [ 'url' => $request->manualUrl ]
+            );
+        
+            // Caso não tenha sido possível criar o manual, lança uma exceção com o erro
+            if (!$gameManual) {
+                Log::error('Erro ao criar o manual para o jogo ' . $game->name, [
+                    'game_id' => $game->id,
+                    'manual_url' => $request->manualUrl,
+                    'platform_id' => $request->manualPlatform,
+                    'language_id' => $request->manualLanguage
+                ]);
+                throw new \Exception("Não foi possível adicionar o manual ao jogo {$game->name}.");
+            }
+        }
+    }
+
     private function insertRelations($game, $gameModel)
     {
         if ($game->genres) {
@@ -196,12 +240,16 @@ class GameController extends Controller
                 'romUrl' => $rom->romUrl,
             ]);
     
-            $relatedGames = GameModel::whereHas('franchises', function ($query) use ($game) {
+            $related = GameModel::whereHas('franchises', function ($query) use ($game) {
                 $query->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
-            })->orWhereHas('collections', function ($query) use ($game) {
+            })->where('game_id', '!=', $game->game_id)->get();
+            
+            $collections = GameModel::whereHas('collections', function ($query) use ($game) {
                 $query->whereIn('tbl_game_collections.collection_id', $game->collections->pluck('collection_id'));
             })->where('game_id', '!=', $game->game_id)->get();
-    
+            
+            $relatedGames = $related->merge($collections);
+
             return view('game-details', compact('game', 'platforms', 'relatedGames'));
         } catch (\Exception $e) {
             Log::error("Erro ao buscar detalhes do jogo: " . $e->getMessage());
