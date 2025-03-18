@@ -241,7 +241,7 @@ class GameController extends Controller
     public function details(string $slug)
     {
         try {
-            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots', 'manuals.platform', 'manuals.language', 'artworks'])->where('slug', $slug)->first();
+            $game = GameModel::with(['roms.platform', 'genres', 'platforms', 'franchises', 'screenshots', 'manuals.platform', 'manuals.language', 'artworks', 'collections'])->where('slug', $slug)->first();
             if (!$game) {
                 Session::flash('errorMsg',"{$slug}: Não foi encontrado!"); 
                 return Redirect::back();
@@ -256,9 +256,15 @@ class GameController extends Controller
 
             $relatedGames = GameModel::whereHas('franchises', function ($query) use ($game) {
                 $query->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
-            })->where('game_id', '!=', $game->game_id)->get();            
+            })->where('game_id', '!=', $game->game_id)->get();
+            
+            $collections = GameModel::whereHas('collections', function ($query) use ($game) {
+                $query->whereIn('tbl_game_collections.collection_id', $game->collections->pluck('collection_id'));
+            })->where('game_id', '!=', $game->game_id)->get();
+            
+            $newRelation = $relatedGames->merge($collections);
 
-            return view('game-details', ['game' => $game, 'platforms' => $platforms, 'relatedGames' => $relatedGames]);
+            return view('game-details', ['game' => $game, 'platforms' => $platforms, 'relatedGames' => $newRelation]);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
