@@ -51,4 +51,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Activity::class, 'tbl_activity_user', 'user_id', 'activity_id')->withPivot('read_at');
     }
 
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id', 'id');
+    }
 }

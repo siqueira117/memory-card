@@ -7,6 +7,20 @@
         <div class="col-md-4">
             <img src="{{ $game["coverUrl"] }}" class="img-fluid rounded shadow" alt="{{ $game["name"] }}">
 
+            <div class="mt-3">
+                @php
+                    $isFavorite = auth()->check() && auth()->user()->favorites()->where('game_id', $game['game_id'])->exists();
+                @endphp
+
+                <form id="favorite-form" action="{{ url('/favorite/'.$game['game_id']) }}" method="POST">
+                    @csrf
+                    <button type="button" id="favorite-button" class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-warning' }}">
+                        <span id="favorite-icon">{{ $isFavorite ? '❤️' : '⭐' }}</span> 
+                        <span id="favorite-text">{{ $isFavorite ? 'Remover Favorito' : 'Favoritar' }}</span>
+                    </button>
+                </form>
+            </div>
+
             <!-- Carousel de Screenshots -->
             @if(isset($game['screenshots']) && count($game['screenshots']) > 0)
                 <div id="gameScreenshots" class="carousel slide mt-3" data-bs-ride="carousel">

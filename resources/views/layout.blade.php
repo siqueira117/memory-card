@@ -82,6 +82,36 @@
     
         document.addEventListener("DOMContentLoaded", fetchNotifications);
     </script>
+    <script>
+        document.getElementById("favorite-button").addEventListener("click", function() {
+            let button = document.getElementById("favorite-button");
+            let icon = document.getElementById("favorite-icon");
+            let text = document.getElementById("favorite-text");
+    
+            fetch("{{ url('/favorite/'.$game['game_id']) }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message.includes("adicionado")) {
+                    button.classList.remove("btn-outline-warning");
+                    button.classList.add("btn-danger");
+                    icon.innerHTML = "❤️";
+                    text.innerHTML = "Remover Favorito";
+                } else {
+                    button.classList.remove("btn-danger");
+                    button.classList.add("btn-outline-warning");
+                    icon.innerHTML = "⭐";
+                    text.innerHTML = "Favoritar";
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @livewireScripts
 </body>

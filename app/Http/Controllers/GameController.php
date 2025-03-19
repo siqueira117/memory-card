@@ -161,6 +161,10 @@ class GameController extends Controller
             $this->insertScreenshots($game->screenshots, $gameModel);
         }
 
+        if ($game->involved_companies) {
+            $this->insertInvolvedCompanies($game->involved_companies, $gameModel);
+        }
+
         $this->insertArtworks($game->id, $gameModel);
     }
 
@@ -191,6 +195,37 @@ class GameController extends Controller
         );
     }
 
+    private function insertInvolvedCompanies($involvedCompanies, $gameModel)
+    {
+        $companiesData = [];
+        
+        foreach ($involvedCompanies as $involvedCompany) {
+            $companyData = $involvedCompany->company;
+            
+            $company = Company::firstOrCreate(
+                ['company_id' => $companyData->id],
+                [
+                    'name'        => $companyData->name,
+                    'slug'        => $companyData->slug,
+                    'description' => $companyData->description ?? null,
+                    'status'      => $this->getCompanyStatus($companyData->status)
+                ]
+            );
+    
+            $companiesData[$company->company_id] = [
+                'developer'  => $involvedCompany->developer,
+                'porting'    => $involvedCompany->porting,
+                'publisher'  => $involvedCompany->publisher,
+                'supporting' => $involvedCompany->supporting,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
+    
+        $gameModel->companies()->syncWithoutDetaching($companiesData);
+    }
+    
+
     private function insertArtworks(int $id, $gameModel)
     {
         $artworks = Artwork::where('game', $id)->get();
@@ -218,7 +253,7 @@ class GameController extends Controller
 
     private function getGameData(Request $request)
     {
-        $query = GameIgdb::with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections'])
+        $query = GameIgdb::with(['cover', 'artworks', 'videos', 'franchises', 'screenshots', 'collections', 'involved_companies', 'involved_companies.company'])
             ->orderBy('first_release_date', 'asc');
     
         return $request->gameId

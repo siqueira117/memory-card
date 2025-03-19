@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\FaqsController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameManualController;
 use App\Http\Controllers\IndexController;
@@ -27,6 +28,7 @@ Route::get('/faqs', [FaqsController::class, 'index'])->name('faqs.index');
 // Usuário
 Route::get('/register', [UserController::class, 'registerView'])->name('user.registerView');
 Route::post('/register', [UserController::class, 'register'])->name('user.register');
+Route::post('/favorite/{gameId}', [FavoriteController::class, 'toggleFavorite'])->middleware('auth');
 
 // Route::get('/login', [UserController::class, 'loginView'])->name('user.loginView');
 Route::post('/login', [UserController::class, 'login'])->name('user.login');
