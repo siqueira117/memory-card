@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection as ModelsCollection;
 use App\Models\Game as GameModel;
-use App\Models\{Franchise, GameGenres, Language, Platform, GameRom, GameManual, GamePlatforms};
+use App\Models\{Company, Franchise, GameGenres, Language, Platform, GameRom, GameManual, GamePlatforms};
 use Illuminate\Support\Facades\{Auth, DB, Log, Redirect, Session};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -107,8 +107,8 @@ class GameController extends Controller
             // Validação dos dados
             $validator = Validator::make($manualDados, [
                 'manualurl' => 'required|url',
-                'manualPlatform' => 'required|integer|exists:tbl_platforms,id',
-                'manualLanguage' => 'required|integer|exists:tbl_languages,id'
+                'manualPlatform' => 'required|integer|exists:tbl_platforms,platform_id',
+                'manualLanguage' => 'required|integer|exists:tbl_languages,language_id'
             ]);
         
             if ($validator->fails()) {
@@ -222,7 +222,7 @@ class GameController extends Controller
             ->orderBy('first_release_date', 'asc');
     
         return $request->gameId
-            ? $query->where('id', $request->gameId)->first()
+            ? $query->where('id', (int)$request->gameId)->first()
             : $query->search($request->gameName)->first();
     }
 
@@ -259,28 +259,51 @@ class GameController extends Controller
         foreach ($games as $game) {
             echo("Atualizando {$game['name']}...\n");
     
-            $gameIgdb = GameIgdb::with(['collections'])->where('slug', $game->slug)->first();
-            if (!$gameIgdb || !$gameIgdb->collections) {
-                echo("Sem collections...\n");
+            $gameIgdb = GameIgdb::with(['involved_companies.company', 'involved_companies'])->where('slug', $game->slug)->first();
+            if (!$gameIgdb || !$gameIgdb->involved_companies) {
+                echo("Sem companies...\n");
                 continue;
             }
-    
-            foreach ($gameIgdb->collections as $collection) {
+
+            foreach ($gameIgdb->involved_companies as $involved_company) {
                 // Verifica se a collection já existe antes de adicionar
-                $collectionModel = ModelsCollection::firstOrCreate(
-                    ['collection_id' => $collection->id], // Campos para buscar
-                    ['name' => $collection->name, 'slug' => $collection->slug] // Campos para preencher caso não exista
-                );
+
+                $game->companies()->attach($involved_company->company->id, [
+                    'developer'  => $involved_company->developer,
+                    'porting'    => $involved_company->porting,
+                    'publisher'  => $involved_company->publisher,
+                    'supporting' => $involved_company->supporting,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
     
-                // Adiciona a collection ao jogo se ainda não estiver associada
-                if (!$game->collections()->where('tbl_game_collections.collection_id', $collectionModel->collection_id)->exists()) {
-                    $game->collections()->attach($collectionModel->collection_id);
-                    echo("Collection '{$collection->name}' adicionada ao jogo {$game['name']}!\n");
-                } else {
-                    echo("Collection '{$collection->name}' já está associada a {$game['name']}.\n");
-                }
+                echo("Company cadastrada\n");
             }
+            echo("\n\n");
+            //     // Adiciona a collection ao jogo se ainda não estiver associada
+                // if (!$game->collections()->where('tbl_game_collections.collection_id', $collectionModel->collection_id)->exists()) {
+                //     $game->collections()->attach($collectionModel->collection_id);
+                //     echo("Collection '{$collection->name}' adicionada ao jogo {$game['name']}!\n");
+                // } else {
+                //     echo("Collection '{$collection->name}' já está associada a {$game['name']}.\n");
+                // }
         }
+    }
+
+    private function getCompanyStatus(?int $status)
+    {
+        if (!$status) {
+            return "defunct";
+        }
+
+        $dePara = [
+            0 => "active",
+            1 => "defunct",
+            2 => "merged",
+            3 => "renamed"
+        ];
+
+        return $dePara[$status];
     }
     
     

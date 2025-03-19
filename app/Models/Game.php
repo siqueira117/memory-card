@@ -70,6 +70,11 @@ class Game extends Model
         return $this->belongsToMany(Theme::class, 'tbl_game_themes', 'game_id', 'theme_id');
     }
 
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'tbl_game_companies', 'game_id', 'company_id');
+    }
+
     public function collections()
     {
         return $this->belongsToMany(Collection::class, 'tbl_game_collections', 'game_id', 'collection_id');
