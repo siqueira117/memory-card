@@ -17,6 +17,7 @@
                     <button type="button" id="favorite-button" class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-warning' }}">
                         <span id="favorite-icon">{{ $isFavorite ? '❤️' : '⭐' }}</span> 
                         <span id="favorite-text">{{ $isFavorite ? 'Remover Favorito' : 'Favoritar' }}</span>
+                        <span id="favorite-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </form>
             </div>
@@ -193,4 +194,47 @@
         @livewire('game-reviews', ['gameId' => $game->game_id])
     </div>
 </div>
+@endsection
+
+@section('script')
+<script>
+    document.getElementById("favorite-button").addEventListener("click", function() {
+        let button = document.getElementById("favorite-button");
+        let icon = document.getElementById("favorite-icon");
+        let text = document.getElementById("favorite-text");
+        let spinner = document.getElementById("favorite-spinner");
+    
+        // Exibe o spinner e desabilita o botão para evitar múltiplos cliques
+        spinner.classList.remove("d-none");
+        button.disabled = true;
+    
+        fetch("{{ url('/favorite/'.$game['game_id']) }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message.includes("adicionado")) {
+                button.classList.remove("btn-outline-warning");
+                button.classList.add("btn-danger");
+                icon.innerHTML = "❤️";
+                text.innerHTML = "Remover Favorito";
+            } else {
+                button.classList.remove("btn-danger");
+                button.classList.add("btn-outline-warning");
+                icon.innerHTML = "⭐";
+                text.innerHTML = "Favoritar";
+            }
+        })
+        .catch(error => console.error('Erro:', error))
+        .finally(() => {
+            // Esconde o spinner e reativa o botão após a requisição
+            spinner.classList.add("d-none");
+            button.disabled = false;
+        });
+    });
+</script>
 @endsection
