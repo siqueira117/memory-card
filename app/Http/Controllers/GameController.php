@@ -275,10 +275,18 @@ class GameController extends Controller
                 'romUrl' => $rom->romUrl,
             ]);
     
-            $relatedGames = GameModel::whereHas('franchises', function ($query) use ($game) {
-                $query->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
-            })->whereHas('collections', function ($query) use ($game) {
-                $query->whereIn('tbl_game_collections.collection_id', $game->collections->pluck('collection_id'));
+            $relatedGames = GameModel::where(function ($query) use ($game) {
+                if ($game->franchises->isNotEmpty()) {
+                    $query->whereHas('franchises', function ($q) use ($game) {
+                        $q->whereIn('tbl_game_franchises.franchise_id', $game->franchises->pluck('franchise_id'));
+                    });
+                }
+            
+                if ($game->collections->isNotEmpty()) {
+                    $query->orWhereHas('collections', function ($q) use ($game) {
+                        $q->whereIn('tbl_game_collections.collection_id', $game->collections->pluck('collection_id'));
+                    });
+                }
             })->where('game_id', '!=', $game->game_id)->get();
 
             return view('game-details', compact('game', 'platforms', 'relatedGames'));

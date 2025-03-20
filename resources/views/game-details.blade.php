@@ -209,18 +209,27 @@
                 </div>
             </div>
 
-            @if (sizeof($relatedGames) > 0) 
+            @if ($relatedGames->isNotEmpty())
                 <div class="rounded-1 bg-dark-custom p-5 mt-3">
                     <h4 class="subtitle mb-3">Jogos relacionados</h4>
-                    <div class="row">
-                        @foreach ($relatedGames as $game)
-                            <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                                <x-card-game-unique :game="$game" />
-                            </div>
-                        @endforeach
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper px-5 py-3">
+                            @foreach ($relatedGames as $game)
+                                <div class="swiper-slide">
+                                    <x-card-game-unique :game="$game" />
+                                </div>
+                            @endforeach
+                        </div>
+                        <!-- Botões de navegação -->
+                        <div class="swiper-button-next" style="color: #2d961b"></div>
+                        <div class="swiper-button-prev" style="color: #2d961b"></div>
+                        <!-- Paginação -->
+                        <div class="swiper-pagination"></div>
                     </div>
                 </div>
             @endif
+        
+
         </div>
     </div>
     
@@ -308,6 +317,32 @@
         //     });
         // });
     });
-    </script>
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        new Swiper(".mySwiper", {
+            autoHeight: false,
+            effect: 'slide',
+            grabCursor: true,
+            slidesPerView: 2,
+            spaceBetween: 10,
+            loop: true,
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            breakpoints: {
+                640: { slidesPerView: 2, spaceBetween: 15 },
+                768: { slidesPerView: 3, spaceBetween: 20 },
+                1024: { slidesPerView: 4, spaceBetween: 25 },
+            }
+        });
+    });
+</script>
+
     
 @endsection

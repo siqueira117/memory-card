@@ -227,3 +227,7 @@ a {
     font-size: 20px;
     border-radius: 50%;
 }
+
+.swiper-pagination-bullet-active {
+    background-color: var(--btn-color);
+}
