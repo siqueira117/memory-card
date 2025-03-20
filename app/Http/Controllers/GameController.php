@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Collection as ModelsCollection;
 use App\Models\Game as GameModel;
-use App\Models\{Company, Franchise, GameGenres, Language, Platform, GameRom, GameManual, GamePlatforms};
+use App\Models\{Company, Franchise, GameGenres, Language, Platform, GameRom, GameManual, GamePlatforms, UserGame};
 use Illuminate\Support\Facades\{Auth, DB, Log, Redirect, Session};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -267,9 +267,9 @@ class GameController extends Controller
             $game = GameModel::with([
                 'roms.platform', 'genres', 'platforms', 'franchises',
                 'screenshots', 'manuals.platform', 'manuals.language', 
-                'artworks', 'collections'
+                'artworks', 'collections', 'userGames'
             ])->where('slug', $slug)->firstOrFail();
-    
+                
             $platforms = $game->roms->map(fn ($rom) => [
                 'platform_name' => $rom->platform->name,
                 'romUrl' => $rom->romUrl,
@@ -286,7 +286,27 @@ class GameController extends Controller
             Log::error("Erro ao buscar detalhes do jogo: " . $e->getMessage());
             return Redirect::back()->with('errorMsg', 'Erro ao carregar detalhes.');
         }
-    }    
+    }
+
+    public function updateStatus(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $gameId = $request->input('game_id');
+            $status = $request->input('status');
+    
+            Log::alert($user);
+            $userGame = UserGame::updateOrCreate(
+                ['user_id' => $user->id, 'game_id' => $gameId],
+                ['status' => $status]
+            );
+    
+            return response()->json(['success' => true, 'status' => $userGame->status]);                
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 
     public function update()
     {

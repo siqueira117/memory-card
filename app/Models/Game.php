@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Events\GameCreated;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Game extends Model
 {
@@ -83,5 +84,15 @@ class Game extends Model
     public function manuals()
     {
         return $this->hasMany(GameManual::class, 'game_id', 'game_id');
+    }
+
+    public function userGames()
+    {
+        return $this->hasMany(UserGame::class, 'game_id', 'game_id');
+    }
+
+    public function getUserStatus()
+    {
+        return $this->userGames()->where('user_id', Auth::id())->first();
     }
 }

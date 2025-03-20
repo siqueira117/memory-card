@@ -7,20 +7,53 @@
         <div class="col-md-4">
             <img src="{{ $game["coverUrl"] }}" class="img-fluid rounded shadow" alt="{{ $game["name"] }}">
 
-            <div class="mt-3">
+            <div class="rounded-1 bg-dark-custom p-3 text-center mt-3" data-game-id="{{ $game['game_id'] }}" id="container-action">
                 @php
                     $isFavorite = auth()->check() && auth()->user()->favorites()->where('game_id', $game['game_id'])->exists();
                 @endphp
 
-                <form id="favorite-form" action="{{ url('/favorite/'.$game['game_id']) }}" method="POST">
-                    @csrf
-                    <button type="button" id="favorite-button" class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-warning' }}">
-                        <span id="favorite-icon">{{ $isFavorite ? '❤️' : '⭐' }}</span> 
-                        <span id="favorite-text">{{ $isFavorite ? 'Remover Favorito' : 'Favoritar' }}</span>
-                        <span id="favorite-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <!-- Botão de Review -->
+                {{-- <button class="btn btn-custom w-100 mb-3">Log or Review</button> --}}
+            
+                <!-- Avaliação (Estrelas) -->
+                {{-- <div class="mb-3">
+                    @for ($i = 1; $i <= 5; $i++)
+                        <i class="fa-star {{ 3 >= $i ? 'fas' : 'far' }} text-warning rating-star" data-value="{{ $i }}"></i>
+                    @endfor
+                </div> --}}
+            
+                <!-- Botões de Status -->
+                <div class="d-flex justify-content-between">
+                    @php
+                        $userStatus = $game->getUserStatus() ? $game->getUserStatus()->status : null;
+                    @endphp
+                    <button class="btn {{ $userStatus === 'played' ? 'status-btn-active' : 'status-btn' }}" data-status="played">
+                        <i class="fa-solid fa-gamepad"></i>
+                        <br> Played
                     </button>
-                </form>
+                    <button class="btn {{ $userStatus === 'playing' ? 'status-btn-active' : 'status-btn' }}" data-status="playing">
+                        <i class="fa-solid fa-play"></i>
+                        <br> Playing
+                    </button>
+                    <button class="btn {{ $userStatus === 'backlog' ? 'status-btn-active' : 'status-btn' }}" data-status="backlog">
+                        <i class="fa-solid fa-book-open"></i>
+                        <br> Backlog
+                    </button>
+                    <button class="btn {{ $userStatus === 'wishlist' ? 'status-btn-active' : 'status-btn' }}" data-status="wishlist">
+                        <i class="fa-solid fa-gift"></i>
+                        <br> Wishlist
+                    </button>
+                </div>
+            
+                <!-- Adicionar às listas -->
+                {{-- <div class="d-flex justify-content-between mt-3">
+                    <button class="btn btn-outline-secondary w-75">📚 Add to lists</button>
+                    <button id="favorite-button" class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-warning' }}">
+                        <span id="favorite-icon">{{ $isFavorite ? '❤️' : '🤍' }}</span>
+                    </button>
+                </div> --}}
             </div>
+            
 
             <!-- Carousel de Screenshots -->
             @if(isset($game['screenshots']) && count($game['screenshots']) > 0)
@@ -190,51 +223,90 @@
         </div>
     </div>
     
-    <div class="row justify-content-end">
+    {{-- <div class="row justify-content-end">
         @livewire('game-reviews', ['gameId' => $game->game_id])
-    </div>
+    </div> --}}
 </div>
 @endsection
 
 @section('script')
 <script>
-    document.getElementById("favorite-button").addEventListener("click", function() {
-        let button = document.getElementById("favorite-button");
-        let icon = document.getElementById("favorite-icon");
-        let text = document.getElementById("favorite-text");
-        let spinner = document.getElementById("favorite-spinner");
+    document.addEventListener("DOMContentLoaded", function () {
+        let gameContainer = document.getElementById("container-action");
+        let gameId = gameContainer ? gameContainer.getAttribute("data-game-id") : null;
     
-        // Exibe o spinner e desabilita o botão para evitar múltiplos cliques
-        spinner.classList.remove("d-none");
-        button.disabled = true;
+        // Avaliação com estrelas
+        // document.querySelectorAll(".rating-star").forEach(star => {
+        //     star.addEventListener("click", function () {
+        //         let rating = this.getAttribute("data-value");
     
-        fetch("{{ url('/favorite/'.$game['game_id']) }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message.includes("adicionado")) {
-                button.classList.remove("btn-outline-warning");
-                button.classList.add("btn-danger");
-                icon.innerHTML = "❤️";
-                text.innerHTML = "Remover Favorito";
-            } else {
-                button.classList.remove("btn-danger");
-                button.classList.add("btn-outline-warning");
-                icon.innerHTML = "⭐";
-                text.innerHTML = "Favoritar";
-            }
-        })
-        .catch(error => console.error('Erro:', error))
-        .finally(() => {
-            // Esconde o spinner e reativa o botão após a requisição
-            spinner.classList.add("d-none");
-            button.disabled = false;
+        //         fetch("/rate-game", {
+        //             method: "POST",
+        //             headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+        //             body: JSON.stringify({ game_id: gameId, rating: rating })
+        //         }).then(response => response.json())
+        //           .then(data => console.log("Rating salvo:", data));
+        //     });
+        // });
+    
+        // Atualizar Status do Jogo
+        document.querySelectorAll(".status-btn, .status-btn-active").forEach(button => {
+            button.addEventListener("click", function () {
+                let status = this.getAttribute("data-status");
+                let isActive = this.classList.contains("status-btn-active");
+
+                // Remove a classe de todos os botões antes de ativar o novo
+                document.querySelectorAll(".status-btn-active").forEach(btn => {
+                    btn.classList.remove("status-btn-active");
+                    btn.classList.add("status-btn");
+                });
+
+                // Se o botão clicado já estava ativo, apenas desativa
+                if (isActive) {
+                    status = null;
+                    this.classList.remove("status-btn-active");
+                    this.classList.add("status-btn");
+                } else {
+                    this.classList.add("status-btn-active");
+                    this.classList.remove("status-btn");
+                }
+
+                // Enviar a requisição para atualizar o status
+                fetch("{{ route('game.update-status') }}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+                    body: JSON.stringify({ game_id: gameId, status: status })
+                })
+                .then(response => response.json())
+                .then(data => console.log("Status atualizado:", data));
+            });
         });
+
+    
+        // Favoritar Jogo
+        // document.getElementById("favorite-button").addEventListener("click", function () {
+        //     let button = this;
+        //     let icon = document.getElementById("favorite-icon");
+    
+        //     fetch("/favorite-game", {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+        //         body: JSON.stringify({ game_id: gameId })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.favorite) {
+        //             button.classList.add("btn-danger");
+        //             button.classList.remove("btn-outline-warning");
+        //             icon.innerHTML = "❤️";
+        //         } else {
+        //             button.classList.remove("btn-danger");
+        //             button.classList.add("btn-outline-warning");
+        //             icon.innerHTML = "🤍";
+        //         }
+        //     });
+        // });
     });
-</script>
+    </script>
+    
 @endsection

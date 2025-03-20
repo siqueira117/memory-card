@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [GameController::class, 'index'])->name('index');
 Route::get('/sobre', [IndexController::class, 'aboutUs'])->name('about.us');
 
-Route::post('/addGame', [GameController::class, 'store'])->name('game.store');
-Route::post('/addManual', [GameManualController::class, 'store'])->name('manual.store');
-
-Route::get('/game/{slug}', [GameController::class, 'details'])->name('game.details');
-// Route::get('/updateGames', [GameController::class, 'update'])->name('game.updates');
+// Games
+Route::prefix('game')->group(function () {
+    Route::post('/addGame', [GameController::class, 'store'])->name('game.store');
+    Route::post('/addManual', [GameManualController::class, 'store'])->name('manual.store');
+    Route::get('/{slug}', [GameController::class, 'details'])->name('game.details');
+    Route::post('/update-status', [GameController::class, 'updateStatus'])->name('game.update-status');
+});
 
 Route::get('/sugestoes', [SuggestionController::class, 'index'])->name('suggestion.index');
 Route::post('/addSuggestion', [SuggestionController::class, 'store'])->name('suggestion.store');
