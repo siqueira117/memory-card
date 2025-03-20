@@ -6,6 +6,14 @@
     <p class="text-muted">Últimas atualizações e melhorias do site.</p>
 
     <div class="bg-dark-custom p-4 rounded mb-4">
+        <h4 class="text-success" style="font-family: FreeMono, monospace">v1.5.0 - 20/03/2025</h4>
+        <ul class="text-white">
+            <li>Possibilide de adicionar um jogo a um status: Played, Playing, Backlog e Wishlist</li>
+            <li>Adição de empresas envolvidas ao jogo</li>
+        </ul>
+    </div>
+
+    <div class="bg-dark-custom p-4 rounded mb-4">
         <h4 class="text-success" style="font-family: FreeMono, monospace">v1.4.0 - 18/03/2025</h4>
         <ul class="text-white">
             <li>Adicionando sistema de notificações</li>
