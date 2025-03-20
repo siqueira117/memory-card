@@ -7,53 +7,54 @@
         <div class="col-md-4">
             <img src="{{ $game["coverUrl"] }}" class="img-fluid rounded shadow" alt="{{ $game["name"] }}">
 
-            <div class="rounded-1 bg-dark-custom p-3 text-center mt-3" data-game-id="{{ $game['game_id'] }}" id="container-action">
-                @php
-                    $isFavorite = auth()->check() && auth()->user()->favorites()->where('game_id', $game['game_id'])->exists();
-                @endphp
-
-                <!-- Botão de Review -->
-                {{-- <button class="btn btn-custom w-100 mb-3">Log or Review</button> --}}
-            
-                <!-- Avaliação (Estrelas) -->
-                {{-- <div class="mb-3">
-                    @for ($i = 1; $i <= 5; $i++)
-                        <i class="fa-star {{ 3 >= $i ? 'fas' : 'far' }} text-warning rating-star" data-value="{{ $i }}"></i>
-                    @endfor
-                </div> --}}
-            
-                <!-- Botões de Status -->
-                <div class="d-flex justify-content-between">
+            @auth
+                <div class="rounded-1 bg-dark-custom p-3 text-center mt-3" data-game-id="{{ $game['game_id'] }}" id="container-action">
                     @php
-                        $userStatus = $game->getUserStatus() ? $game->getUserStatus()->status : null;
+                        $isFavorite = auth()->check() && auth()->user()->favorites()->where('game_id', $game['game_id'])->exists();
                     @endphp
-                    <button class="btn {{ $userStatus === 'played' ? 'status-btn-active' : 'status-btn' }}" data-status="played">
-                        <i class="fa-solid fa-gamepad"></i>
-                        <br> Played
-                    </button>
-                    <button class="btn {{ $userStatus === 'playing' ? 'status-btn-active' : 'status-btn' }}" data-status="playing">
-                        <i class="fa-solid fa-play"></i>
-                        <br> Playing
-                    </button>
-                    <button class="btn {{ $userStatus === 'backlog' ? 'status-btn-active' : 'status-btn' }}" data-status="backlog">
-                        <i class="fa-solid fa-book-open"></i>
-                        <br> Backlog
-                    </button>
-                    <button class="btn {{ $userStatus === 'wishlist' ? 'status-btn-active' : 'status-btn' }}" data-status="wishlist">
-                        <i class="fa-solid fa-gift"></i>
-                        <br> Wishlist
-                    </button>
+
+                    <!-- Botão de Review -->
+                    {{-- <button class="btn btn-custom w-100 mb-3">Log or Review</button> --}}
+                
+                    <!-- Avaliação (Estrelas) -->
+                    {{-- <div class="mb-3">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="fa-star {{ 3 >= $i ? 'fas' : 'far' }} text-warning rating-star" data-value="{{ $i }}"></i>
+                        @endfor
+                    </div> --}}
+                
+                    <!-- Botões de Status -->
+                    <div class="d-flex justify-content-between">
+                        @php
+                            $userStatus = $game->getUserStatus() ? $game->getUserStatus()->status : null;
+                        @endphp
+                        <button class="btn {{ $userStatus === 'played' ? 'status-btn-active' : 'status-btn' }}" data-status="played">
+                            <i class="fa-solid fa-gamepad"></i>
+                            <br> Played
+                        </button>
+                        <button class="btn {{ $userStatus === 'playing' ? 'status-btn-active' : 'status-btn' }}" data-status="playing">
+                            <i class="fa-solid fa-play"></i>
+                            <br> Playing
+                        </button>
+                        <button class="btn {{ $userStatus === 'backlog' ? 'status-btn-active' : 'status-btn' }}" data-status="backlog">
+                            <i class="fa-solid fa-book-open"></i>
+                            <br> Backlog
+                        </button>
+                        <button class="btn {{ $userStatus === 'wishlist' ? 'status-btn-active' : 'status-btn' }}" data-status="wishlist">
+                            <i class="fa-solid fa-gift"></i>
+                            <br> Wishlist
+                        </button>
+                    </div>
+                
+                    <!-- Adicionar às listas -->
+                    {{-- <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-outline-secondary w-75">📚 Add to lists</button>
+                        <button id="favorite-button" class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-warning' }}">
+                            <span id="favorite-icon">{{ $isFavorite ? '❤️' : '🤍' }}</span>
+                        </button>
+                    </div> --}}
                 </div>
-            
-                <!-- Adicionar às listas -->
-                {{-- <div class="d-flex justify-content-between mt-3">
-                    <button class="btn btn-outline-secondary w-75">📚 Add to lists</button>
-                    <button id="favorite-button" class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-warning' }}">
-                        <span id="favorite-icon">{{ $isFavorite ? '❤️' : '🤍' }}</span>
-                    </button>
-                </div> --}}
-            </div>
-            
+            @endauth
 
             <!-- Carousel de Screenshots -->
             @if(isset($game['screenshots']) && count($game['screenshots']) > 0)
@@ -223,9 +224,9 @@
         </div>
     </div>
     
-    {{-- <div class="row justify-content-end">
+    <div class="row justify-content-end">
         @livewire('game-reviews', ['gameId' => $game->game_id])
-    </div> --}}
+    </div>
 </div>
 @endsection
 
