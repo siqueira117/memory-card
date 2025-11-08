@@ -62,12 +62,13 @@
 
     <small>Total de jogos: {{ $allGames }}</small>
 
-    <!-- Loading Spinner -->
-    <div wire:loading wire:target="search, genre, platform, orderBy, orderDirection" class="text-center my-4 container">
-        <div class="spinner-border text-success" role="status">
-            <span class="visually-hidden">Carregando...</span>
+    <!-- Loading State with Skeleton -->
+    <div wire:loading wire:target="search, genre, platform, orderBy, orderDirection" class="my-4">
+        <div class="row g-3">
+            @for($i = 0; $i < 12; $i++)
+                <x-skeleton-game-card />
+            @endfor
         </div>
-        <p>Carregando resultados...</p>
     </div>
 
     @if(sizeof($games) > 0)

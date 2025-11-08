@@ -32,12 +32,46 @@ class GameController extends Controller
         return view('index', $return);
     }
     
+    public function searchGames(Request $request)
+    {
+        try {
+            $query = $request->input('q');
+            
+            if (!$query || strlen($query) < 3) {
+                return response()->json(['games' => []]);
+            }
+
+            $games = GameIgdb::with(['cover', 'platforms', 'genres'])
+                ->search($query)
+                ->limit(10)
+                ->get();
+
+            $formattedGames = $games->map(function($game) {
+                return [
+                    'id' => $game->id,
+                    'name' => $game->name,
+                    'cover' => $game->cover ? 'https:' . $game->cover->getUrl(Size::COVER_SMALL, true) : asset('img/default-avatar.png'),
+                    'year' => $game->first_release_date ? date('Y', $game->first_release_date) : null,
+                    'platforms' => $game->platforms ? $game->platforms->take(3)->pluck('name')->implode(', ') : null,
+                    'genres' => $game->genres ? $game->genres->take(3)->pluck('name')->implode(', ') : null,
+                ];
+            });
+
+            return response()->json(['games' => $formattedGames]);
+        } catch (\Exception $e) {
+            Log::error("Erro ao buscar jogos: " . $e->getMessage());
+            return response()->json(['error' => 'Erro ao buscar jogos'], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'gameId'        => 'required|integer',
-            'gameDownload'  => 'required|url',
-            'gamePlatform'  => 'required|integer'
+            'gameId'         => 'required|integer',
+            'gameDownload'   => 'required|array',
+            'gameDownload.*' => 'required|url',
+            'gamePlatform'   => 'required|array',
+            'gamePlatform.*' => 'required|integer'
         ]);
     
         if ($validator->fails()) {
@@ -66,31 +100,29 @@ class GameController extends Controller
                 "coverUrl"              => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
             ]);
     
-            // Se o jogo já existia, apenas insere a ROM
-            if (!$gameModel->wasRecentlyCreated) {
-                $this->insertRoms($request, $game->id);
+            // Inserir múltiplas ROMs
+            $romsAdded = $this->insertMultipleRoms($request, $game->id);
             
-                $request->session()->flash('successMsg', "{$game->name}: ROM adicionada com sucesso!");
+            // Se o jogo já existia
+            if (!$gameModel->wasRecentlyCreated) {
+                $request->session()->flash('successMsg', "{$game->name}: {$romsAdded} ROM(s) adicionada(s) com sucesso!");
                 return Redirect::back();
             }
             
             // Inserir manual
             $this->insertManual($request, $game);
-
-            // Inserir ROMs
-            $this->insertRoms($request, $game->id);
     
             // Inserir coleções, franquias, temas e plataformas
             $this->insertRelations($game, $gameModel);
     
             DB::commit();
     
-            $request->session()->flash('successMsg', "{$game->name}: Cadastrado com sucesso!");
+            $request->session()->flash('successMsg', "{$game->name}: Cadastrado com sucesso com {$romsAdded} ROM(s)!");
             return Redirect::back();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Erro ao cadastrar jogo: " . $e->getMessage());
-            return Redirect::back()->with('errorMsg', 'Erro ao cadastrar jogo.');
+            return Redirect::back()->with('errorMsg', 'Erro ao cadastrar jogo: ' . $e->getMessage());
         }
     }
     
@@ -238,6 +270,33 @@ class GameController extends Controller
 
             $gameModel->artworks()->createMany($dados);
         }
+    }
+
+    private function insertMultipleRoms($request, int $gameId)
+    {
+        $romsAdded = 0;
+        $platforms = $request->input('gamePlatform', []);
+        $downloads = $request->input('gameDownload', []);
+
+        foreach ($platforms as $index => $platformId) {
+            if (isset($downloads[$index]) && !empty($downloads[$index])) {
+                // Verifica se já existe uma ROM com a mesma plataforma
+                $existingRom = GameRom::where('game_id', $gameId)
+                    ->where('platform_id', (int)$platformId)
+                    ->first();
+
+                if (!$existingRom) {
+                    GameRom::create([
+                        'game_id'       => $gameId,
+                        'platform_id'   => (int)$platformId,
+                        'romUrl'        => $downloads[$index]
+                    ]);
+                    $romsAdded++;
+                }
+            }
+        }
+
+        return $romsAdded;
     }
 
     private function insertRoms($request, int $gameId)

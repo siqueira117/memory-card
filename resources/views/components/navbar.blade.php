@@ -49,8 +49,13 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
+                                <a class="dropdown-item {{ request()->is('profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">
+                                    <i class="fas fa-user me-2"></i>Meu Perfil
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item {{ request()->is('/changelog') ? 'active' : '' }}" href="{{ route("changelog") }}">
-                                    Changelog
+                                    <i class="fas fa-code-branch me-2"></i>Changelog
                                 </a>
                             </li>
                             {{-- <li>
@@ -62,7 +67,9 @@
                             <li>
                                 <form method="POST" action="{{ route('user.logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">Sair</button>
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Sair
+                                    </button>
                                 </form>
                             </li>
                         </ul>

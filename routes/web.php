@@ -22,6 +22,11 @@ Route::prefix('game')->group(function () {
     Route::post('/update-status', [GameController::class, 'updateStatus'])->name('game.update-status');
 });
 
+// API Routes for AJAX
+Route::prefix('api')->group(function () {
+    Route::get('/games/search', [GameController::class, 'searchGames'])->name('api.games.search');
+});
+
 Route::get('/sugestoes', [SuggestionController::class, 'index'])->name('suggestion.index');
 Route::post('/addSuggestion', [SuggestionController::class, 'store'])->name('suggestion.store');
 
@@ -46,5 +51,8 @@ Route::get('/changelog', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'getUnreadNotifications'])->name('notifications');
     Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
+    Route::get('/profile/edit', [UserController::class, 'editProfile'])->name('user.profile.edit');
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
 });
 
