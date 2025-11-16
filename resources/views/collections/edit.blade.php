@@ -2,29 +2,31 @@
 
 @section('title', 'Editar Coleção - MemoryCard')
 
+@section('style')
+<link rel="stylesheet" href="{{ asset('css/collections.css') }}">
+@endsection
+
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Header -->
-            <div class="text-center mb-5">
-                <div class="edit-icon mb-3">
+<div class="collections-page py-5">
+    <div class="container">
+        <div class="collection-form-wrapper">
+            <div class="collection-form-header text-center mb-4">
+                <div class="collection-form-icon">
                     <i class="fas fa-edit"></i>
                 </div>
-                <h1 class="mb-2" style="color: var(--text-primary);">Editar Coleção</h1>
-                <p class="lead" style="color: var(--text-secondary);">{{ $collection->name }}</p>
+                <p class="eyebrow mb-1">Editar coleção</p>
+                <h1>Personalize os detalhes</h1>
+                <p class="text-muted">{{ $collection->name }}</p>
             </div>
 
-            <!-- Formulário -->
-            <div class="edit-form-card">
+            <div class="collection-form-card glass-panel">
                 <form action="{{ route('collections.update', $collection->slug) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
-                    <!-- Nome da Coleção -->
-                    <div class="form-group mb-4">
+                    <div class="collection-form-section">
                         <label for="name" class="form-label">
-                            <i class="fas fa-heading me-2"></i>Nome da Coleção *
+                            <i class="fas fa-heading me-2"></i>Nome da coleção *
                         </label>
                         <input 
                             type="text" 
@@ -39,13 +41,10 @@
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text text-muted">
-                            <i class="fas fa-info-circle me-1"></i>Máximo de 150 caracteres
-                        </small>
+                        <small class="form-text text-muted">Máximo de 150 caracteres</small>
                     </div>
 
-                    <!-- Descrição -->
-                    <div class="form-group mb-4">
+                    <div class="collection-form-section">
                         <label for="description" class="form-label">
                             <i class="fas fa-align-left me-2"></i>Descrição
                         </label>
@@ -60,13 +59,10 @@
                         @error('description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text text-muted">
-                            <i class="fas fa-info-circle me-1"></i>Máximo de 1000 caracteres
-                        </small>
+                        <small class="form-text text-muted">Máximo de 1000 caracteres</small>
                     </div>
 
-                    <!-- Tags -->
-                    <div class="form-group mb-4">
+                    <div class="collection-form-section">
                         <label for="tags" class="form-label">
                             <i class="fas fa-tags me-2"></i>Tags
                         </label>
@@ -81,56 +77,44 @@
                         @error('tags')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text text-muted">
-                            <i class="fas fa-info-circle me-1"></i>Separe as tags com vírgulas
-                        </small>
+                        <small class="form-text text-muted">Separe as tags com vírgulas</small>
                     </div>
 
-                    <!-- Imagem da Coleção -->
-                    <div class="form-group mb-4">
+                    <div class="collection-form-section">
                         <label class="form-label">
-                            <i class="fas fa-image me-2"></i>Imagem da Coleção
+                            <i class="fas fa-image me-2"></i>Imagem de capa
                         </label>
 
                         @if($collection->cover_image)
-                        <div class="current-cover mb-3">
-                            <img src="{{ str_starts_with($collection->cover_image, 'http') ? $collection->cover_image : asset('storage/' . $collection->cover_image) }}" alt="{{ $collection->name }}" class="cover-preview">
-                            <button type="button" class="btn btn-remove-cover" onclick="removeCover()">
-                                <i class="fas fa-times me-2"></i>Remover Imagem
-                            </button>
-                        </div>
+                            <div class="cover-preview mb-3">
+                                <img src="{{ \Illuminate\Support\Str::startsWith($collection->cover_image, ['http://', 'https://']) ? $collection->cover_image : asset('storage/' . $collection->cover_image) }}" alt="{{ $collection->name }}">
+                                <button type="button" class="btn btn-ghost-danger" onclick="removeCover()">
+                                    <i class="fas fa-trash me-2"></i>Remover capa atual
+                                </button>
+                            </div>
                         @endif
 
                         <div class="cover-upload-options">
-                            <div class="upload-option">
-                                <label for="cover_image" class="upload-label">
-                                    <i class="fas fa-upload me-2"></i>
-                                    Fazer Upload de Imagem
-                                </label>
+                            <div class="upload-option mb-3">
+                                <label for="cover_image" class="upload-label">Enviar nova imagem</label>
                                 <input 
                                     type="file" 
                                     class="form-control form-control-modern @error('cover_image') is-invalid @enderror" 
+                                    name="cover_image" 
                                     id="cover_image" 
-                                    name="cover_image"
-                                    accept="image/*"
+                                    accept="image/png,image/jpeg,image/webp,image/gif"
                                     onchange="previewImage(this)"
                                 >
                                 @error('cover_image')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
-                                <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>JPG, PNG, GIF ou WebP - Máximo 2MB
-                                </small>
+                                <small class="form-text text-muted">JPG, PNG, GIF ou WebP • Máximo 2MB</small>
                             </div>
 
                             @if($collection->games()->count() > 0)
-                            <div class="text-center my-3">
-                                <span class="text-muted">ou</span>
-                            </div>
-
-                            <button type="button" class="btn btn-custom-secondary w-100" onclick="autoGenerateCover()">
-                                <i class="fas fa-magic me-2"></i>Gerar Automaticamente do Primeiro Jogo
-                            </button>
+                                <button type="button" class="btn btn-custom-outline w-100" onclick="autoGenerateCover()">
+                                    <i class="fas fa-magic me-2"></i>Gerar automaticamente pelo primeiro jogo
+                                </button>
                             @endif
                         </div>
 
@@ -139,20 +123,18 @@
                         </div>
                     </div>
 
-                    <!-- Visibilidade -->
-                    <div class="form-group mb-4">
-                        <label class="form-label mb-3">
+                    <div class="collection-form-section">
+                        <label class="form-label">
                             <i class="fas fa-eye me-2"></i>Visibilidade
                         </label>
                         <div class="visibility-options">
-                            <label class="visibility-option" for="public_edit">
+                            <label class="visibility-option">
                                 <input 
                                     class="visibility-radio" 
                                     type="radio" 
                                     name="is_public" 
-                                    id="public_edit" 
                                     value="1" 
-                                    {{ old('is_public', $collection->is_public) == '1' ? 'checked' : '' }}
+                                    {{ old('is_public', $collection->is_public ? '1' : '0') == '1' ? 'checked' : '' }}
                                 >
                                 <div class="visibility-card">
                                     <div class="visibility-icon">
@@ -168,14 +150,13 @@
                                 </div>
                             </label>
                             
-                            <label class="visibility-option" for="private_edit">
+                            <label class="visibility-option">
                                 <input 
                                     class="visibility-radio" 
                                     type="radio" 
                                     name="is_public" 
-                                    id="private_edit" 
                                     value="0"
-                                    {{ old('is_public', $collection->is_public) == '0' ? 'checked' : '' }}
+                                    {{ old('is_public', $collection->is_public ? '1' : '0') == '0' ? 'checked' : '' }}
                                 >
                                 <div class="visibility-card">
                                     <div class="visibility-icon">
@@ -183,7 +164,7 @@
                                     </div>
                                     <div class="visibility-content">
                                         <strong>Privada</strong>
-                                        <small>Apenas você pode ver</small>
+                                        <small>Apenas você pode visualizar</small>
                                     </div>
                                     <div class="visibility-check">
                                         <i class="fas fa-check-circle"></i>
@@ -193,35 +174,26 @@
                         </div>
                     </div>
 
-                    <!-- Botões -->
-                    <div class="d-flex gap-3 pt-4 border-top" style="border-color: var(--border-color) !important;">
-                        <a href="{{ route('collections.show', $collection->slug) }}" class="btn btn-custom-secondary flex-fill">
-                            <i class="fas fa-times me-2"></i>Cancelar
+                    <div class="collection-form-actions mt-4">
+                        <a href="{{ route('collections.show', $collection->slug) }}" class="btn btn-ghost">
+                            <i class="fas fa-arrow-left me-2"></i>Cancelar
                         </a>
-                        <button type="submit" class="btn btn-custom flex-fill">
-                            <i class="fas fa-save me-2"></i>Salvar Alterações
+                        <button type="submit" class="btn btn-custom">
+                            <i class="fas fa-save me-2"></i>Salvar alterações
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Zona de Perigo -->
-            <div class="danger-zone">
+            <div class="danger-zone glass-panel mt-4">
                 <div class="danger-zone-header">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Zona de Perigo</strong>
+                    Zona de perigo
                 </div>
                 <div class="danger-zone-body">
-                    <p>
-                        Ao deletar esta coleção, todos os jogos associados serão removidos permanentemente. 
-                        Esta ação não pode ser desfeita.
-                    </p>
-                    <button 
-                        type="button" 
-                        class="btn btn-danger-custom" 
-                        onclick="deleteCollection()"
-                    >
-                        <i class="fas fa-trash me-2"></i>Deletar Coleção
+                    <p>Deletar esta coleção removerá permanentemente todos os jogos associados. Esta ação não pode ser desfeita.</p>
+                    <button type="button" class="btn btn-danger-custom" onclick="deleteCollection()">
+                        <i class="fas fa-trash me-2"></i>Deletar coleção
                     </button>
                 </div>
             </div>
@@ -231,7 +203,7 @@
 
 <script>
 function deleteCollection() {
-    if (!confirm('Tem certeza que deseja deletar esta coleção? Esta ação não pode ser desfeita.')) {
+    if (!confirm('Tem certeza que deseja deletar esta coleção?')) {
         return;
     }
 
@@ -354,234 +326,4 @@ function showToast(message, type) {
     }, 3000);
 }
 </script>
-
-<style>
-/* Header Icon */
-.edit-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-    background: var(--btn-gradient);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 24px rgba(45, 150, 27, 0.4);
-}
-
-.edit-icon i {
-    font-size: 2rem;
-    color: white;
-}
-
-/* Form Card */
-.edit-form-card {
-    background: var(--card-gradient);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 40px;
-    margin-bottom: 30px;
-}
-
-/* Radio Buttons Customizados */
-.visibility-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.visibility-option {
-    cursor: pointer;
-    margin: 0;
-}
-
-.visibility-radio {
-    display: none;
-}
-
-.visibility-card {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 16px;
-    background: var(--input-color);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.visibility-card:hover {
-    border-color: var(--btn-color);
-    background: rgba(45, 150, 27, 0.1);
-    transform: translateX(4px);
-}
-
-.visibility-radio:checked + .visibility-card {
-    border-color: var(--btn-color);
-    background: rgba(45, 150, 27, 0.15);
-    box-shadow: 0 4px 12px rgba(45, 150, 27, 0.3);
-}
-
-.visibility-icon {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    background: var(--dark-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-}
-
-.visibility-radio:checked + .visibility-card .visibility-icon {
-    background: var(--btn-gradient);
-    color: white;
-    box-shadow: 0 4px 12px rgba(45, 150, 27, 0.4);
-}
-
-.visibility-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.visibility-content strong {
-    color: var(--text-primary);
-    font-size: 1rem;
-    margin-bottom: 2px;
-}
-
-.visibility-content small {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.visibility-check {
-    color: var(--text-secondary);
-    font-size: 1.5rem;
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.visibility-radio:checked + .visibility-card .visibility-check {
-    color: var(--btn-color);
-    opacity: 1;
-}
-
-/* Danger Zone */
-.danger-zone {
-    background: var(--card-gradient);
-    border: 2px solid #ff4444;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.danger-zone-header {
-    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
-    color: white;
-    padding: 16px 24px;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.danger-zone-body {
-    padding: 24px;
-}
-
-.danger-zone-body p {
-    color: var(--text-secondary);
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-
-.btn-danger-custom {
-    background: transparent;
-    border: 2px solid #ff4444;
-    color: #ff4444;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-danger-custom:hover {
-    background: rgba(255, 68, 68, 0.1);
-    border-color: #ff5555;
-    color: #ff5555;
-    transform: translateY(-2px);
-}
-
-/* Cover Image */
-.current-cover {
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid var(--border-color);
-}
-
-.cover-preview {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
-}
-
-.btn-remove-cover {
-    width: 100%;
-    padding: 10px;
-    background: rgba(255, 68, 68, 0.1);
-    border: 2px solid #ff4444;
-    color: #ff4444;
-    border-radius: 0;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.btn-remove-cover:hover {
-    background: rgba(255, 68, 68, 0.2);
-}
-
-.cover-upload-options {
-    background: var(--input-color);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.upload-option {
-    margin-bottom: 0;
-}
-
-.upload-label {
-    display: block;
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.image-preview {
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid var(--border-color);
-}
-
-.image-preview img {
-    width: 100%;
-    height: auto;
-    max-height: 300px;
-    object-fit: cover;
-    display: block;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .edit-form-card {
-        padding: 24px;
-    }
-}
-</style>
 @endsection
