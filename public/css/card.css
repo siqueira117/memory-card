@@ -8,8 +8,8 @@
   border: 1px solid rgba(45, 150, 27, 0.1);
   border-radius: 16px;
   width: 60%;
-  margin: auto;
-  overflow: hidden;
+  margin: 1rem auto;
+  overflow: visible;
   position: relative;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -54,11 +54,18 @@
 }
 
 .card img {
-  border-radius: 0;
+  border-radius: 16px 16px 0 0;
   height: 300px;
   width: 100%;
   object-fit: cover;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+}
+
+.card-img-wrapper {
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  position: relative;
 }
 
 .card:hover img {
@@ -92,25 +99,27 @@ small, p {
 }
 
 .badge-new {
-  background: linear-gradient(135deg, #74f94d, #2d961b);
-  width: fit-content;
-  font-size: 11px;
-  font-weight: 700;
-  margin: auto;
-  color: #000;
-  padding: 4px 10px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(116, 249, 77, 0.4);
-  animation: pulse-badge 2s infinite;
+  background: linear-gradient(135deg, #74f94d, #2d961b) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+  padding: 5px 12px !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 4px 12px rgba(116, 249, 77, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+  animation: pulse-badge 2s infinite !important;
+  white-space: nowrap !important;
+  border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
 @keyframes pulse-badge {
   0%, 100% {
-    box-shadow: 0 4px 12px rgba(116, 249, 77, 0.4);
+    box-shadow: 0 4px 12px rgba(116, 249, 77, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.3);
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 4px 20px rgba(116, 249, 77, 0.6);
+    box-shadow: 0 4px 20px rgba(116, 249, 77, 0.7), 0 0 0 2px rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
   }
 }

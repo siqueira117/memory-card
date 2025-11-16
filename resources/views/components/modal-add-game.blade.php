@@ -328,7 +328,34 @@
 .select-modern:focus {
     border-color: var(--btn-color);
     box-shadow: 0 0 0 3px rgba(45, 150, 27, 0.1);
-    background: var(--dark-color);
+    background: #32323a;
+}
+
+.form-control-modern {
+    background: var(--input-color) !important;
+    border: 2px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-control-modern:focus {
+    background: #32323a !important;
+    border-color: var(--btn-color) !important;
+    box-shadow: 0 0 0 3px rgba(45, 150, 27, 0.15) !important;
+    color: var(--text-primary) !important;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    z-index: 1;
+    pointer-events: none;
 }
 
 /* Scrollbar */
@@ -386,28 +413,49 @@ function searchGames(query) {
     loading.style.display = 'block';
     results.innerHTML = '';
     
+    console.log('🔍 Buscando jogos:', query);
+    
     fetch(`/api/games/search?q=${encodeURIComponent(query)}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('📡 Resposta recebida:', response.status, response.statusText);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.json();
+        })
         .then(data => {
+            console.log('📦 Dados recebidos:', data);
             loading.style.display = 'none';
             
             if (data.games && data.games.length > 0) {
-                results.innerHTML = data.games.map(game => `
-                    <div class="game-result-item" onclick='selectGame(${JSON.stringify(game)})'>
-                        <img src="${game.cover}" alt="${game.name}" class="game-result-cover">
-                        <div class="game-result-info">
-                            <div class="game-result-title">${game.name}</div>
-                            <div class="game-result-meta">
-                                <i class="fas fa-calendar me-1"></i>${game.year || 'N/A'}
-                                ${game.platforms ? `<i class="fas fa-desktop ms-2 me-1"></i>${game.platforms}` : ''}
+                console.log('✅ Jogos encontrados:', data.games.length);
+                results.innerHTML = data.games.map((game, index) => {
+                    // Escapar o JSON para evitar problemas com aspas
+                    const gameJson = JSON.stringify(game).replace(/'/g, '&apos;').replace(/"/g, '&quot;');
+                    
+                    return `
+                        <div class="game-result-item" data-game-index="${index}" onclick="selectGameByIndex(${index})">
+                            <img src="${game.cover}" alt="${game.name}" class="game-result-cover">
+                            <div class="game-result-info">
+                                <div class="game-result-title">${game.name}</div>
+                                <div class="game-result-meta">
+                                    <i class="fas fa-calendar me-1"></i>${game.year || 'N/A'}
+                                    ${game.platforms ? `<i class="fas fa-desktop ms-2 me-1"></i>${game.platforms}` : ''}
+                                </div>
+                            </div>
+                            <div class="text-success align-self-center">
+                                <i class="fas fa-chevron-right"></i>
                             </div>
                         </div>
-                        <div class="text-success align-self-center">
-                            <i class="fas fa-chevron-right"></i>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
+                
+                // Armazenar os jogos globalmente para acesso pelo índice
+                window.searchResults = data.games;
             } else {
+                console.log('⚠️ Nenhum jogo encontrado');
                 results.innerHTML = `
                     <div class="text-center py-4 text-secondary">
                         <i class="fas fa-search fa-2x mb-2"></i>
@@ -417,15 +465,26 @@ function searchGames(query) {
             }
         })
         .catch(error => {
+            console.error('❌ Erro ao buscar jogos:', error);
+            console.error('❌ Detalhes do erro:', error.message, error.stack);
             loading.style.display = 'none';
             results.innerHTML = `
                 <div class="text-center py-4 text-danger">
                     <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
                     <p>Erro ao buscar jogos.</p>
+                    <small class="text-muted">${error.message}</small>
                 </div>
             `;
-            console.error('Error:', error);
         });
+}
+
+function selectGameByIndex(index) {
+    if (window.searchResults && window.searchResults[index]) {
+        console.log('🎮 Jogo selecionado:', window.searchResults[index]);
+        selectGame(window.searchResults[index]);
+    } else {
+        console.error('❌ Jogo não encontrado no índice:', index);
+    }
 }
 
 function selectGame(game) {

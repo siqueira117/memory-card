@@ -34,38 +34,107 @@ class GameController extends Controller
     
     public function searchGames(Request $request)
     {
+        $query = $request->input('q');
+        
+        Log::info('🔍 [BUSCA JOGOS] Iniciando busca', [
+            'query' => $query,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+        
         try {
-            $query = $request->input('q');
-            
             if (!$query || strlen($query) < 3) {
+                Log::info('⚠️ [BUSCA JOGOS] Query muito curta', ['query' => $query, 'length' => strlen($query)]);
                 return response()->json(['games' => []]);
             }
 
+            Log::info('📡 [BUSCA JOGOS] Consultando API IGDB', ['query' => $query]);
+            
             $games = GameIgdb::with(['cover', 'platforms', 'genres'])
                 ->search($query)
                 ->limit(10)
                 ->get();
 
+            Log::info('✅ [BUSCA JOGOS] Jogos encontrados', [
+                'query' => $query,
+                'total_encontrados' => $games->count()
+            ]);
+
             $formattedGames = $games->map(function($game) {
-                return [
-                    'id' => $game->id,
-                    'name' => $game->name,
-                    'cover' => $game->cover ? 'https:' . $game->cover->getUrl(Size::COVER_SMALL, true) : asset('img/default-avatar.png'),
-                    'year' => $game->first_release_date ? date('Y', $game->first_release_date) : null,
-                    'platforms' => $game->platforms ? $game->platforms->take(3)->pluck('name')->implode(', ') : null,
-                    'genres' => $game->genres ? $game->genres->take(3)->pluck('name')->implode(', ') : null,
-                ];
-            });
+                try {
+                    $coverUrl = asset('img/default-avatar.png');
+                    if ($game->cover) {
+                        try {
+                            $coverUrl = 'https:' . $game->cover->getUrl(Size::COVER_SMALL, true);
+                        } catch (\Exception $e) {
+                            Log::warning('⚠️ [BUSCA JOGOS] Erro ao obter URL da capa', [
+                                'game_id' => $game->id,
+                                'game_name' => $game->name,
+                                'erro' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                    
+                    // Extrair o ano da data de lançamento
+                    $year = null;
+                    if ($game->first_release_date) {
+                        if (is_numeric($game->first_release_date)) {
+                            // Se for timestamp
+                            $year = date('Y', $game->first_release_date);
+                        } elseif ($game->first_release_date instanceof \Carbon\Carbon) {
+                            // Se for objeto Carbon
+                            $year = $game->first_release_date->format('Y');
+                        } elseif (is_string($game->first_release_date)) {
+                            // Se for string
+                            $year = date('Y', strtotime($game->first_release_date));
+                        }
+                    }
+                    
+                    return [
+                        'id' => $game->id,
+                        'name' => $game->name,
+                        'cover' => $coverUrl,
+                        'year' => $year,
+                        'platforms' => $game->platforms ? $game->platforms->take(3)->pluck('name')->implode(', ') : null,
+                        'genres' => $game->genres ? $game->genres->take(3)->pluck('name')->implode(', ') : null,
+                    ];
+                } catch (\Exception $e) {
+                    Log::error('❌ [BUSCA JOGOS] Erro ao formatar jogo', [
+                        'game_id' => $game->id ?? 'unknown',
+                        'erro' => $e->getMessage()
+                    ]);
+                    return null;
+                }
+            })->filter(); // Remove nulls
+
+            Log::info('📦 [BUSCA JOGOS] Resposta formatada', [
+                'query' => $query,
+                'total_formatados' => $formattedGames->count(),
+                'jogos' => $formattedGames->pluck('name')->toArray()
+            ]);
 
             return response()->json(['games' => $formattedGames]);
         } catch (\Exception $e) {
-            Log::error("Erro ao buscar jogos: " . $e->getMessage());
-            return response()->json(['error' => 'Erro ao buscar jogos'], 500);
+            Log::error('❌ [BUSCA JOGOS] Erro ao buscar jogos', [
+                'query' => $query,
+                'erro' => $e->getMessage(),
+                'linha' => $e->getLine(),
+                'arquivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Erro ao buscar jogos: ' . $e->getMessage()], 500);
         }
     }
 
     public function store(Request $request)
     {
+        Log::info('💾 [CADASTRO JOGO] Iniciando cadastro', [
+            'game_id' => $request->input('gameId'),
+            'user' => Auth::check() ? Auth::user()->email : 'guest',
+            'plataformas' => $request->input('gamePlatform'),
+            'total_roms' => count($request->input('gameDownload', []))
+        ]);
+        
         $validator = Validator::make($request->all(), [
             'gameId'         => 'required|integer',
             'gameDownload'   => 'required|array',
@@ -75,17 +144,30 @@ class GameController extends Controller
         ]);
     
         if ($validator->fails()) {
+            Log::warning('⚠️ [CADASTRO JOGO] Validação falhou', [
+                'game_id' => $request->input('gameId'),
+                'erros' => $validator->errors()->toArray()
+            ]);
             return Redirect::back()->withErrors($validator);
         }
     
         try {
             DB::beginTransaction();
     
+            Log::info('📡 [CADASTRO JOGO] Buscando jogo no IGDB', ['game_id' => $request->input('gameId')]);
+            
             // Buscar jogo no IGDB
             $game = $this->getGameData($request);
             if (!$game) {
+                Log::error('❌ [CADASTRO JOGO] Jogo não encontrado no IGDB', ['game_id' => $request->input('gameId')]);
                 throw new \Exception("Jogo não encontrado no IGDB.");
             }
+            
+            Log::info('✅ [CADASTRO JOGO] Jogo encontrado no IGDB', [
+                'game_id' => $game->id,
+                'nome' => $game->name,
+                'slug' => $game->slug
+            ]);
     
             // Verificar se já existe no banco
             $gameModel = GameModel::firstOrCreate([
@@ -100,11 +182,34 @@ class GameController extends Controller
                 "coverUrl"              => "https:" . $game->cover->getUrl(Size::COVER_BIG, true)
             ]);
     
+            if ($gameModel->wasRecentlyCreated) {
+                Log::info('🆕 [CADASTRO JOGO] Novo jogo criado no banco', [
+                    'game_id' => $game->id,
+                    'nome' => $game->name
+                ]);
+            } else {
+                Log::info('📝 [CADASTRO JOGO] Jogo já existe, adicionando ROMs', [
+                    'game_id' => $game->id,
+                    'nome' => $game->name
+                ]);
+            }
+    
             // Inserir múltiplas ROMs
             $romsAdded = $this->insertMultipleRoms($request, $game->id);
             
+            Log::info('💿 [CADASTRO JOGO] ROMs adicionadas', [
+                'game_id' => $game->id,
+                'total_roms_adicionadas' => $romsAdded
+            ]);
+            
             // Se o jogo já existia
             if (!$gameModel->wasRecentlyCreated) {
+                DB::commit();
+                Log::info('✅ [CADASTRO JOGO] ROMs adicionadas ao jogo existente', [
+                    'game_id' => $game->id,
+                    'nome' => $game->name,
+                    'roms_adicionadas' => $romsAdded
+                ]);
                 $request->session()->flash('successMsg', "{$game->name}: {$romsAdded} ROM(s) adicionada(s) com sucesso!");
                 return Redirect::back();
             }
@@ -117,11 +222,24 @@ class GameController extends Controller
     
             DB::commit();
     
+            Log::info('🎉 [CADASTRO JOGO] Jogo cadastrado com sucesso', [
+                'game_id' => $game->id,
+                'nome' => $game->name,
+                'roms_adicionadas' => $romsAdded,
+                'user' => Auth::check() ? Auth::user()->email : 'guest'
+            ]);
+            
             $request->session()->flash('successMsg', "{$game->name}: Cadastrado com sucesso com {$romsAdded} ROM(s)!");
             return Redirect::back();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Erro ao cadastrar jogo: " . $e->getMessage());
+            Log::error('❌ [CADASTRO JOGO] Erro ao cadastrar jogo', [
+                'game_id' => $request->input('gameId'),
+                'erro' => $e->getMessage(),
+                'linha' => $e->getLine(),
+                'arquivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return Redirect::back()->with('errorMsg', 'Erro ao cadastrar jogo: ' . $e->getMessage());
         }
     }
@@ -322,12 +440,27 @@ class GameController extends Controller
 
     public function details(string $slug)
     {
+        Log::info('🎮 [DETALHES JOGO] Visualizando detalhes', [
+            'slug' => $slug,
+            'user' => Auth::check() ? Auth::user()->email : 'guest',
+            'ip' => request()->ip()
+        ]);
+        
         try {
             $game = GameModel::with([
                 'roms.platform', 'genres', 'platforms', 'franchises',
                 'screenshots', 'manuals.platform', 'manuals.language', 
                 'artworks', 'collections', 'userGames'
             ])->where('slug', $slug)->firstOrFail();
+            
+            Log::info('✅ [DETALHES JOGO] Jogo encontrado', [
+                'game_id' => $game->game_id,
+                'nome' => $game->name,
+                'slug' => $slug,
+                'total_roms' => $game->roms->count(),
+                'total_screenshots' => $game->screenshots->count(),
+                'total_manuals' => $game->manuals->count()
+            ]);
                 
             $platforms = $game->roms->map(fn ($rom) => [
                 'platform_name' => $rom->platform->name,
@@ -348,29 +481,56 @@ class GameController extends Controller
                 }
             })->where('game_id', '!=', $game->game_id)->get();
 
+            Log::info('🔗 [DETALHES JOGO] Jogos relacionados encontrados', [
+                'game_id' => $game->game_id,
+                'total_relacionados' => $relatedGames->count()
+            ]);
+
             return view('game-details', compact('game', 'platforms', 'relatedGames'));
         } catch (\Exception $e) {
-            Log::error("Erro ao buscar detalhes do jogo: " . $e->getMessage());
+            Log::error('❌ [DETALHES JOGO] Erro ao buscar detalhes', [
+                'slug' => $slug,
+                'erro' => $e->getMessage(),
+                'linha' => $e->getLine(),
+                'arquivo' => $e->getFile()
+            ]);
             return Redirect::back()->with('errorMsg', 'Erro ao carregar detalhes.');
         }
     }
 
     public function updateStatus(Request $request)
     {
+        $user = Auth::user();
+        $gameId = $request->input('game_id');
+        $status = $request->input('status');
+        
+        Log::info('🎯 [STATUS JOGO] Atualizando status do jogo', [
+            'user' => $user->email,
+            'game_id' => $gameId,
+            'novo_status' => $status
+        ]);
+        
         try {
-            $user = Auth::user();
-            $gameId = $request->input('game_id');
-            $status = $request->input('status');
-    
-            Log::alert($user);
             $userGame = UserGame::updateOrCreate(
                 ['user_id' => $user->id, 'game_id' => $gameId],
                 ['status' => $status]
             );
+            
+            Log::info('✅ [STATUS JOGO] Status atualizado com sucesso', [
+                'user' => $user->email,
+                'game_id' => $gameId,
+                'status' => $userGame->status
+            ]);
     
             return response()->json(['success' => true, 'status' => $userGame->status]);                
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
+            Log::error('❌ [STATUS JOGO] Erro ao atualizar status', [
+                'user' => $user->email,
+                'game_id' => $gameId,
+                'status' => $status,
+                'erro' => $e->getMessage(),
+                'linha' => $e->getLine()
+            ]);
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }

@@ -101,6 +101,29 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Add to Collection Card -->
+                <div class="info-card mb-4">
+                    <div class="info-card-header">
+                        <i class="fas fa-layer-group me-2"></i>
+                        <h5 class="mb-0">Adicionar à Coleção</h5>
+                    </div>
+                    <div class="info-card-body">
+                        <button 
+                            class="btn btn-outline-success w-100" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#addToCollectionModal"
+                        >
+                            <i class="fas fa-plus me-2"></i>Adicionar a uma Coleção
+                        </button>
+                        
+                        <div class="mt-2 text-center">
+                            <a href="{{ route('collections.create') }}" class="text-muted small">
+                                <i class="fas fa-plus-circle me-1"></i>Criar nova coleção
+                            </a>
+                        </div>
+                    </div>
+                </div>
             @endauth
 
             <!-- Game Info Card -->
@@ -339,10 +362,13 @@
     <!-- Reviews Section -->
     <div class="row">
         <div class="col-12">
-            @livewire('game-reviews', ['gameId' => $game->game_id])
+            <x-reviews-section :game="$game" />
         </div>
     </div>
 </div>
+
+<!-- Review Modal -->
+<x-modal-review :game="$game" />
 
 <!-- Modals -->
 <div class="modal fade" id="screenshotModal" tabindex="-1">
@@ -366,6 +392,31 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Add to Collection -->
+@auth
+<div class="modal fade" id="addToCollectionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-layer-group me-2"></i>Adicionar à Coleção
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="collectionsList">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endauth
 
 @endsection
 
@@ -816,6 +867,162 @@ document.addEventListener("DOMContentLoaded", function () {
             1024: { slidesPerView: 4, spaceBetween: 25 },
         }
     });
+
+    @auth
+    // Load user collections when modal opens
+    const collectionsModal = document.getElementById('addToCollectionModal');
+    if (collectionsModal) {
+        collectionsModal.addEventListener('show.bs.modal', function () {
+            loadUserCollections();
+        });
+    }
+
+    function loadUserCollections() {
+        const gameId = {{ $game['game_id'] }};
+        const container = document.getElementById('collectionsList');
+        
+        // Show loading
+        container.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+            </div>
+        `;
+
+        // Fetch user collections
+        fetch('/api/user/collections', {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.collections.length > 0) {
+                showCollectionsList(data.collections, gameId, container);
+            } else {
+                showEmptyState(container);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading collections:', error);
+            showEmptyState(container);
+        });
+    }
+
+    function showCollectionsList(collections, gameId, container) {
+        let html = `
+            <div class="alert alert-info mb-3">
+                <i class="fas fa-info-circle me-2"></i>
+                Selecione a coleção onde deseja adicionar este jogo:
+            </div>
+            <div class="list-group">
+        `;
+
+        collections.forEach(collection => {
+            html += `
+                <button type="button" 
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        onclick="addToCollection(${collection.collection_id}, ${gameId})">
+                    <div>
+                        <i class="fas fa-layer-group me-2 text-success"></i>
+                        <strong>${collection.name}</strong>
+                        <br>
+                        <small class="text-muted">
+                            <i class="fas fa-gamepad me-1"></i>
+                            ${collection.games_count} ${collection.games_count === 1 ? 'jogo' : 'jogos'}
+                        </small>
+                    </div>
+                    <i class="fas fa-plus text-success"></i>
+                </button>
+            `;
+        });
+
+        html += `
+            </div>
+            <div class="text-center mt-3">
+                <a href="{{ route('collections.create') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-plus me-2"></i>Criar Nova Coleção
+                </a>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    function showEmptyState(container) {
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-layer-group fa-3x text-muted mb-3"></i>
+                <p class="text-muted mb-3">Você ainda não tem coleções.</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCollectionModal">
+                    <i class="fas fa-plus me-2"></i>Criar Primeira Coleção
+                </button>
+            </div>
+        `;
+    }
+
+    window.addToCollection = function(collectionId, gameId) {
+        // Desabilitar botões enquanto processa
+        const buttons = document.querySelectorAll('#collectionsList .list-group-item');
+        buttons.forEach(btn => btn.disabled = true);
+
+        fetch('{{ route("collections.add-game") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                collection_id: collectionId,
+                game_id: gameId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensagem de sucesso
+                showToast(data.message, 'success');
+                
+                // Fechar modal
+                const modalElement = document.getElementById('addToCollectionModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+            } else {
+                showToast(data.error || 'Erro ao adicionar jogo', 'error');
+                // Reabilitar botões
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Erro ao adicionar jogo à coleção', 'error');
+            // Reabilitar botões
+            buttons.forEach(btn => btn.disabled = false);
+        });
+    };
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed bottom-0 end-0 m-3`;
+        toast.style.zIndex = '9999';
+        toast.style.minWidth = '300px';
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            ${message}
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+    @endauth
 });
 </script>
 @endsection

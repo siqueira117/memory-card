@@ -10,14 +10,12 @@
                 <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(45, 150, 27, 0.1) 0%, rgba(0, 0, 0, 0) 100%); z-index: 0;"></div>
                 
                 <div class="position-relative" style="z-index: 1;">
-                    <div class="user-avatar mb-3">
-                        <div class="avatar-circle">
-                            @if($user->avatar)
-                                <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="profile-avatar-img">
-                            @else
-                                <img src="{{ asset('img/default-avatar.png') }}" alt="{{ $user->name }}" class="profile-avatar-img">
-                            @endif
-                        </div>
+                    <div class="avatar-circle mx-auto mb-3">
+                        @if($user->avatar)
+                            <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="profile-avatar-img">
+                        @else
+                            <img src="{{ asset('img/default-avatar.png') }}" alt="{{ $user->name }}" class="profile-avatar-img">
+                        @endif
                     </div>
                     <h2 class="fw-bold text-white mb-2">{{ $user->name }}</h2>
                     
@@ -86,6 +84,13 @@
                 <p class="stat-label mb-0">Reviews</p>
             </div>
         </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="stat-card bg-dark-custom p-3 text-center h-100">
+                <i class="fas fa-layer-group fa-2x text-primary mb-2"></i>
+                <h3 class="stat-number">{{ $stats['total_collections'] }}</h3>
+                <p class="stat-label mb-0">Coleções</p>
+            </div>
+        </div>
     </div>
 
     <!-- Tabs Navigation -->
@@ -113,6 +118,11 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
                 <i class="fas fa-star me-2"></i>Minhas Reviews
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="collections-tab" data-bs-toggle="tab" data-bs-target="#collections" type="button">
+                <i class="fas fa-layer-group me-2"></i>Coleções ({{ $stats['total_collections'] }})
             </button>
         </li>
     </ul>
@@ -229,6 +239,76 @@
                 </div>
             @endif
         </div>
+
+        <!-- Collections Tab -->
+        <div class="tab-pane fade" id="collections" role="tabpanel">
+            @if($collections->count() > 0)
+                <div class="row g-4">
+                    @foreach($collections as $collection)
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 collection-card">
+                                <div class="collection-header" style="background: linear-gradient(135deg, #2d961b 0%, #3db82a 100%); padding: 20px;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h5 class="text-white mb-0">
+                                            <i class="fas fa-layer-group me-2"></i>
+                                            {{ $collection->name }}
+                                        </h5>
+                                        <span class="badge {{ $collection->is_public ? 'bg-light text-dark' : 'bg-secondary' }}">
+                                            <i class="fas {{ $collection->is_public ? 'fa-globe' : 'fa-lock' }}"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    @if($collection->description)
+                                        <p class="text-secondary small mb-3">{{ Str::limit($collection->description, 100) }}</p>
+                                    @endif
+                                    
+                                    <div class="d-flex justify-content-between text-muted small mb-3">
+                                        <span>
+                                            <i class="fas fa-gamepad me-1"></i>
+                                            {{ $collection->games_count }} {{ $collection->games_count === 1 ? 'jogo' : 'jogos' }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-users me-1"></i>
+                                            {{ $collection->followers_count }} {{ $collection->followers_count === 1 ? 'seguidor' : 'seguidores' }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('collections.show', $collection->slug) }}" class="btn btn-sm btn-outline-success flex-grow-1">
+                                            <i class="fas fa-eye me-1"></i>Ver
+                                        </a>
+                                        <a href="{{ route('collections.edit', $collection->slug) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer bg-transparent text-muted small">
+                                    <i class="far fa-calendar me-1"></i>
+                                    Criada em {{ $collection->created_at->format('d/m/Y') }}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ route('collections.index', ['filter' => 'my']) }}" class="btn btn-primary">
+                        <i class="fas fa-layer-group me-2"></i>Ver Todas as Coleções
+                    </a>
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <i class="fas fa-layer-group fa-3x text-secondary mb-3"></i>
+                    <p class="text-secondary mb-3">Você ainda não criou nenhuma coleção.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newCollectionModal">
+                        <i class="fas fa-plus me-2"></i>Criar Primeira Coleção
+                    </button>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 
@@ -239,17 +319,22 @@
     background: var(--card-gradient);
     border: 4px solid var(--btn-color);
     border-radius: 50%;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 8px 24px rgba(45, 150, 27, 0.3);
     overflow: hidden;
+    position: relative;
 }
 
 .profile-avatar-img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
 }
 
 .user-bio {
@@ -306,6 +391,33 @@
     color: var(--btn-color);
     background: transparent;
     border-bottom-color: var(--btn-color);
+}
+
+/* Collection Cards */
+.collection-card {
+    background: var(--card-gradient);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.collection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(45, 150, 27, 0.2);
+    border-color: var(--btn-color);
+}
+
+.collection-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.collection-card .card-body {
+    background: var(--card-gradient);
+}
+
+.collection-card .card-footer {
+    border-top: 1px solid var(--border-color);
 }
 </style>
 @endsection

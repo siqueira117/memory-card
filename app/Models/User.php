@@ -65,6 +65,63 @@ class User extends Authenticatable
 
     public function reviews()
     {
-        return $this->hasMany(GameReview::class, 'user_id', 'id');
+        return $this->hasMany(Review::class, 'user_id', 'id');
+    }
+
+    /**
+     * Coleções criadas pelo usuário
+     */
+    public function collections()
+    {
+        return $this->hasMany(Collection::class, 'user_id', 'id');
+    }
+
+    /**
+     * Coleções que o usuário está seguindo
+     */
+    public function followingCollections()
+    {
+        return $this->belongsToMany(Collection::class, 'tbl_collection_followers', 'user_id', 'collection_id')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Tags personalizadas do usuário
+     */
+    public function gameTags()
+    {
+        return $this->hasMany(GameTag::class, 'user_id', 'id');
+    }
+
+    /**
+     * Notas privadas do usuário
+     */
+    public function gameNotes()
+    {
+        return $this->hasMany(GameNote::class, 'user_id', 'id');
+    }
+
+    /**
+     * Total de reviews do usuário
+     */
+    public function getTotalReviewsAttribute()
+    {
+        return $this->reviews()->count();
+    }
+
+    /**
+     * Média de avaliação do usuário
+     */
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating');
+    }
+
+    /**
+     * Total de coleções criadas
+     */
+    public function getTotalCollectionsAttribute()
+    {
+        return $this->collections()->count();
     }
 }

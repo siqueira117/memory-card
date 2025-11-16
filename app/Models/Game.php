@@ -95,4 +95,74 @@ class Game extends Model
     {
         return $this->userGames()->where('user_id', Auth::id())->first();
     }
+
+    /**
+     * Reviews do jogo
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'game_id', 'game_id');
+    }
+
+    /**
+     * Média de avaliação do jogo
+     */
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating');
+    }
+
+    /**
+     * Total de reviews
+     */
+    public function getTotalReviewsAttribute()
+    {
+        return $this->reviews()->count();
+    }
+
+    /**
+     * Distribuição de ratings (quantos de cada estrela)
+     */
+    public function getRatingDistributionAttribute()
+    {
+        return [
+            5 => $this->reviews()->where('rating', 5)->count(),
+            4 => $this->reviews()->where('rating', 4)->count(),
+            3 => $this->reviews()->where('rating', 3)->count(),
+            2 => $this->reviews()->where('rating', 2)->count(),
+            1 => $this->reviews()->where('rating', 1)->count(),
+        ];
+    }
+
+    /**
+     * Tags do jogo
+     */
+    public function tags()
+    {
+        return $this->hasMany(GameTag::class, 'game_id', 'game_id');
+    }
+
+    /**
+     * Notas do jogo
+     */
+    public function notes()
+    {
+        return $this->hasMany(GameNote::class, 'game_id', 'game_id');
+    }
+
+    /**
+     * Pega as tags de um usuário específico para este jogo
+     */
+    public function getUserTags($userId)
+    {
+        return $this->tags()->where('user_id', $userId)->pluck('tag')->toArray();
+    }
+
+    /**
+     * Pega a nota de um usuário específico para este jogo
+     */
+    public function getUserNote($userId)
+    {
+        return $this->notes()->where('user_id', $userId)->first();
+    }
 }
